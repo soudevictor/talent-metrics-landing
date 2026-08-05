@@ -5,7 +5,7 @@ import { Dropzone } from '@/components/playground/dropzone';
 import { ScoreCard } from '@/components/playground/score-card';
 import { SkeletonCard } from '@/components/playground/skeleton-card';
 import { Button } from '@/components/ui/button';
-import { RotateCcw, AlertCircle, Sparkles } from 'lucide-react';
+import { RotateCcw, AlertCircle } from 'lucide-react';
 import type { ResumeAnalysis } from '@/lib/schemas/resume-schema';
 
 type PlaygroundState = 'empty' | 'loading' | 'error' | 'success';
@@ -14,7 +14,11 @@ interface ApiErrorResponse {
   error: string;
 }
 
-export function PlaygroundSection() {
+interface PlaygroundSectionProps {
+  jobTitle?: string;
+}
+
+export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
   const [state, setState] = useState<PlaygroundState>('empty');
   const [result, setResult] = useState<ResumeAnalysis | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -27,6 +31,10 @@ export function PlaygroundSection() {
     try {
       const formData = new FormData();
       formData.append('file', file);
+
+      if (jobTitle?.trim()) {
+        formData.append('jobTitle', jobTitle.trim());
+      }
 
       const response = await fetch('/api/analyze-resume', {
         method: 'POST',
@@ -49,7 +57,7 @@ export function PlaygroundSection() {
       setErrorMessage(message);
       setState('error');
     }
-  }, []);
+  }, [jobTitle]);
 
   const handleRetry = useCallback(() => {
     setState('empty');
@@ -58,24 +66,7 @@ export function PlaygroundSection() {
   }, []);
 
   return (
-    <section
-      id="playground"
-      className="relative py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full scroll-mt-28"
-    >
-      {/* Section Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs sm:text-sm font-medium mb-4">
-          <Sparkles className="w-4 h-4 text-purple-400" aria-hidden="true" />
-          <span>Demo Gratuita</span>
-        </div>
-        <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-          Teste a Análise com IA
-        </h2>
-        <p className="mt-3 text-slate-400 text-sm sm:text-base max-w-lg mx-auto">
-          Envie um currículo em PDF ou DOCX e veja em tempo real como nossa IA avalia o perfil do candidato.
-        </p>
-      </div>
-
+    <div className="w-full space-y-6">
       {/* Empty State — Dropzone */}
       {state === 'empty' ? (
         <Dropzone onFileSelect={handleFileSelect} />
@@ -119,7 +110,7 @@ export function PlaygroundSection() {
 
       {/* Success State — Score Card */}
       {state === 'success' && result ? (
-        <div className="space-y-4">
+        <div className="space-y-4" aria-live="polite" aria-atomic="true">
           <ScoreCard data={result} />
           <div className="flex justify-center">
             <Button
@@ -134,6 +125,6 @@ export function PlaygroundSection() {
           </div>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }

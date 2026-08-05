@@ -47,6 +47,8 @@ export async function POST(request: Request) {
     }
 
     const fileEntry = formData.get('file');
+    const jobTitleEntry = formData.get('jobTitle');
+    const jobTitle = typeof jobTitleEntry === 'string' ? jobTitleEntry.trim() : '';
 
     // Duck-typing check: in some runtimes (jsdom, edge), instanceof File may fail
     // across realm boundaries. We check for Blob-like properties instead.
@@ -98,12 +100,12 @@ export async function POST(request: Request) {
                 {
                   type: 'text' as const,
                   text: `Você é um especialista em RH e recrutamento técnico. Analise o currículo a seguir e retorne uma avaliação estruturada com:
-- score: nota de 0 a 100 representando a qualidade geral do currículo
+- score: nota de 0 a 100 representando a qualidade geral do currículo${jobTitle ? ` e o alinhamento com a vaga de "${jobTitle}"` : ''}
 - summary: um resumo executivo de 2-3 frases sobre o perfil do candidato
-- matchingPoints: lista de 3-5 pontos fortes do candidato
+- matchingPoints: lista de 3-5 pontos fortes do candidato${jobTitle ? ` em relação à vaga de "${jobTitle}"` : ''}
 - improvementPoints: lista de 2-4 sugestões de melhoria
 - matchPercentageByRole: mapa de 3 cargos relevantes e suas porcentagens de fit
-
+${jobTitle ? `\nA vaga-alvo é: "${jobTitle}". Considere este contexto na avaliação.` : ''}
 Analise o conteúdo do documento enviado.`,
                 },
                 {

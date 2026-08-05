@@ -1,54 +1,57 @@
 # Context & Instructions for AI Coding Agent
 
 ## 1. Visão Geral do Projeto
-Você está atuando como um Engenheiro Front-End Sênior e Arquiteto de Software criando uma Landing Page B2B SaaS para uma plataforma de IA voltada à triagem e gestão de currículos para RH (Plataforma Fictícia para Fins de Estudo/Demonstração).
 
-A aplicação conta com:
-- **Landing Page SSG/ISR**: Focada em conversão, SEO e métricas Web Vitals impecáveis (LCP < 1.2s, CLS 0, INP otimizado).
-- **Playground Interativo (Demo Gratuita)**: Formulário/Dropzone para upload de currículo (.pdf, .docx), integração em tempo real com IA via streaming para análise e scoring (0-100), pontos de combinação e recomendações de melhoria.
+[cite_start]Você está atuando como um Engenheiro Front-End Sênior e Arquiteto de Software evoluindo a aplicação **Talent Metrics Landing** (`talent-metrics-landing`). [cite_start]Trata-se de uma plataforma B2B SaaS de triagem e análise de currículos por IA voltada para recrutadores de RH[cite: 2, 3].
+
+A aplicação divide-se estritamente em duas rotas principais:
+
+1. [cite_start]**Landing Page Promocional (`app/page.tsx`)**: Rota principal (`/`), focada em apresentação do produto, proposta de valor, funcionalidades, planos de preço, depoimentos e conversão[cite: 37, 80]. [cite_start]Renderizada via SSG/ISR para Web Vitals impecáveis (LCP < 1.2s, CLS 0)[cite: 37].
+2. [cite_start]**Playground de Teste da Ferramenta (`app/playground/page.tsx`)**: Rota dedicada (`/playground`) onde o recrutador pode testar a ferramenta gratuitamente de forma simplificada[cite: 7, 38].
 
 ---
 
 ## 2. Tech Stack & Decisões Arquiteturais
 
-| Categoria | Tecnologia Escolhida | Regra de Uso |
-| :--- | :--- | :--- |
-| **Framework** | Next.js (App Router, Server Components) | Manter código de servidor por padrão. Use `'use client'` apenas em componentes com estado/interatividade. |
-| **Estilização** | Tailwind CSS + `clsx` / `tailwind-merge` | Design System modular, suporte nativo a modo escuro/claro e mobile-first. |
-| **IA / Backend** | Vercel AI SDK (`ai`) + `@ai-sdk/google` (Gemini) | Respostas em streaming via Serverless/Edge Functions com validação de payload via `zod`. |
-| **Animações** | Framer Motion (`motion`) / CSS Nativos | Animações performáticas de entrada e scroll. RESPEITAR obrigatoriamente `prefers-reduced-motion`. |
-| **Validação** | Zod + React Hook Form | Schemas estritos para payload do currículo e resposta estruturada da IA. |
-| **Testes** | Vitest + React Testing Library + Playwright | Vitest para unitários/hooks; Playwright para E2E do fluxo de upload e análise. |
+| Categoria        | Tecnologia Escolhida                                 | Regra de Uso                                                                                                                                    |
+| :--------------- | :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**    | Next.js (App Router, Server Components)              | [cite_start]Manter lógica no servidor por padrão[cite: 68]. [cite_start]Usar `'use client'` apenas em componentes com interatividade[cite: 38]. |
+| **Estilização**  | Tailwind CSS + `clsx` + `tailwind-merge`             | [cite_start]Design System modular com suporte a mobile-first e classe utilitária `cn()`[cite: 64, 154, 164].                                    |
+| **IA / Backend** | Vercel AI SDK (`ai`) + `@ai-sdk/google` (Gemini 2.0) | [cite_start]Respostas em streaming estruturado via Serverless/Edge Function `/api/analyze-resume`[cite: 41, 107].                               |
+| **Validação**    | Zod (`ResumeAnalysisSchema`) + React Hook Form       | [cite_start]Schema estrito para estruturar o retorno da IA (nota 0-100, resumo, pontos de alinhamento e melhoria)[cite: 42, 65].                |
+| **Animações**    | Framer Motion (`motion`) / CSS Nativos               | [cite_start]Animações leves respeitando obrigatoriamente a regra `prefers-reduced-motion`[cite: 48, 163].                                       |
+| **Testes**       | Vitest + React Testing Library + Playwright          | Vitest para unitários/componentes; [cite_start]Playwright para E2E do fluxo de upload[cite: 34, 49, 50].                                        |
 
 ---
 
-## 3. Diretrizes Rígidas de Desenvolvimento
+## 3. Diretrizes Rígidas de Desenvolvimento & Acessibilidade
 
-### 3.1. Performance & Carregamento
-- **Hero Section**: NUNCA utilizar vídeos pesados no Hero sem fallback ou sem otimização extrema. Priorizar SVG animado, gradients via CSS ou Canvas/WebGL sutil. Se houver mídia, aplicar `poster` WebP/AVIF com `fetchpriority="high"`.
-- **Animações de Entrada**: Não bloquear o FCP (First Contentful Paint) com splash screens longas ou contadores de carregamento fictícios.
-- **Aviso de Projeto Fictício**: Implementar como um **Banner Topo Fixo (Dismissible)** armazenado em `localStorage`, e NÃO como uma animação que impede a navegação inicial do usuário.
+### 3.1. Estrutura de Rotas e Navegação
 
-### 3.2. Acessibilidade (WCAG 2.2 Level AA)
-- Todos os elementos interativos devem ter foco visível e navegação funcional via teclado (`Tab`, `Space`, `Enter`).
-- O Dropzone de arquivos deve possuir `role="button"`, `tabIndex={0}` e suporte explicito a `aria-describedby` listando os formatos aceitos (`.pdf`, `.docx`, max 5MB).
-- O painel de resultado da IA que recebe streaming deve possuir a propriedade `aria-live="polite"` para anúncio automático por leitores de tela à medida que os dados chegam.
+- [cite_start]`app/page.tsx`: Landing Page promocional limpa[cite: 68, 80]. Botões de CTA "Testar Grátis" ou "Experimentar" devem redirecionar para `/playground`.
+- `app/playground/page.tsx`: Página isolada contendo o formulário de contextualização da vaga, a Dropzone de upload e o dashboard de resultado (`ScoreCard`).
+- [cite_start]`app/api/analyze-resume/route.ts`: Endpoint da API responsável por receber o arquivo (PDF/DOCX), extrair o texto e realizar o streaming do schema Zod com o Gemini via Vercel AI SDK[cite: 39, 106, 107].
 
-### 3.3. Padrões de Código e Convenções
-- **TypeScript Estrito**: Tipagem explícita em todos os arquivos. Proibido o uso de `any`.
-- **Componentização**:
-  - `components/ui`: Componentes atômicos genéricos de UI (Button, Card, Badge, Modal).
-  - `components/landing`: Seções estáticas da landing page (Hero, Features, Pricing, Testimonials).
-  - `components/playground`: Componentes dinâmicos de teste de IA (Dropzone, ScoreDashboard, StreamingFeedback).
-- **Estrutura de API Routes**:
-  - Utilizar Vercel AI SDK (`streamText` ou `streamObject`) integrando com Gemini.
-  - Tratar retornos de erro (Rate Limit, PDF ilegível, tamanho excedido) com status HTTP semânticos (400, 429, 500).
+### 3.2. UX Defensiva & Estados de UI (Obrigatório)
+
+[cite_start]Tanto no Playground quanto na landing page, deve-se tratar rigorosamente os 4 estados de interface[cite: 62, 155]:
+
+1. [cite_start]**Empty State**: Zona de drop com bordas tracejadas, ícone explicativo e formatos aceitos (`.pdf`, `.docx`, máx. 5MB)[cite: 43, 155].
+2. [cite_start]**Loading State**: Skeleton Loader com dimensões exatas do dashboard para zerar o Cumulative Layout Shift (CLS) durante o streaming da IA[cite: 44, 156].
+3. [cite_start]**Error State**: Fallbacks visuais amigáveis para falhas de leitura, arquivo corrompido, tamanho excedido (>5MB) ou limite de cota da API[cite: 45, 157].
+4. [cite_start]**Streaming State**: Apresentação progressiva da pontuação (0 a 100), resumo executivo e tópicos de recomendação[cite: 44, 158].
+
+### 3.3. Acessibilidade (WCAG 2.2 Level AA)
+
+- [cite_start]**Teclado**: A Dropzone deve possuir `tabIndex={0}`, `role="button"` e ser acionável via `Space` ou `Enter`[cite: 46, 98].
+- [cite_start]**Leitores de Tela**: O container que recebe a análise por streaming no `/playground` DEVE ter a propriedade `aria-live="polite"`[cite: 47, 101, 161].
+- [cite_start]**Banner Legal Fixo**: Implementar um `DisclaimerBanner` no topo de `app/layout.tsx` (avisando sobre o caráter fictício para estudo) com botão para ocultar e estado persistido no `localStorage` (`hasDismissedDisclaimer`)[cite: 32, 93].
 
 ---
 
 ## 4. Schemas de Dados (Zod Contract)
 
-Sempre que manipular retornos da análise da IA, utilize a seguinte estrutura estrita:
+[cite_start]Utilize e exporte este contrato de dados em `lib/schemas/resume-schema.ts`[cite: 65]:
 
 ```typescript
 import { z } from 'zod';
@@ -62,3 +65,22 @@ export const ResumeAnalysisSchema = z.object({
 });
 
 export type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema>;
+
+## 5. Estratégia de Testes Automatizados (Vitest)
+
+Todos os fluxos cruciais devem ser cobertos com testes em tests/:
+
+    tests/schemas/resume-schema.test.ts: Validação de objetos válidos e rejeição de dados fora do intervalo (ex: score < 0 ou > 100).
+
+    tests/components/dropzone.test.tsx: Teste do componente Dropzone para upload de extensões permitidas (.pdf, .docx) e rejeição de inválidas (.png, .exe) com mensagens de erro.
+
+    tests/api/analyze-resume.test.ts: Mock de chamadas da Vercel AI SDK e teste de tratamento de erros HTTP (400, 500).
+
+## 6. Instruções de Implementação para o Agent
+
+    Escreva código TypeScript estrito (strict: true), limpo e sem o uso de any.
+
+    Não misture o código da Landing Page (/) com o da ferramenta de teste (/playground).
+
+    Ao finalizar as modificações, rode a suíte de testes do Vitest e garanta 100% de aprovação antes de concluir a tarefa.
+```

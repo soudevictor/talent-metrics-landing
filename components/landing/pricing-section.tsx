@@ -1,5 +1,5 @@
 import { Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { PricingCtaButton } from '@/components/landing/pricing-cta-button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -114,13 +114,10 @@ export function PricingSection() {
             </div>
 
             <CardFooter className="mt-8">
-              <Button
-                variant={plan.isPopular ? 'primary' : 'outline'}
-                size="lg"
-                className="w-full"
-              >
-                {plan.ctaText}
-              </Button>
+              <PricingCtaButton
+                label={plan.ctaText}
+                isPopular={plan.isPopular}
+              />
             </CardFooter>
           </Card>
         ))}

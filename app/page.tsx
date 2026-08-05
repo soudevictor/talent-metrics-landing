@@ -1,10 +1,10 @@
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { AnimatedSection } from '@/components/ui/animated-section';
-import { PlaygroundSection } from '@/components/playground/playground-section';
+import { NavCtaButtons, HeroCtaButtons } from '@/components/landing/landing-cta-buttons';
 import { FeaturesSection } from '@/components/landing/features-section';
 import { PricingSection } from '@/components/landing/pricing-section';
 import { TestimonialsSection } from '@/components/landing/testimonials-section';
-import { ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { Sparkles, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -28,20 +28,13 @@ export default function Home() {
 
           <nav className="hidden md:flex items-center gap-8 text-sm text-slate-300 font-medium">
             <a href="#features" className="hover:text-white transition-colors">Recursos</a>
-            <a href="#playground" className="hover:text-white transition-colors">Playground IA</a>
+            <Link href="/playground" className="hover:text-white transition-colors">Playground IA</Link>
             <a href="#pricing" className="hover:text-white transition-colors">Planos</a>
             <a href="#testimonials" className="hover:text-white transition-colors">Depoimentos</a>
           </nav>
 
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              Entrar
-            </Button>
-            <a href="#playground">
-              <Button variant="primary" size="sm">
-                Testar Agora
-              </Button>
-            </a>
+            <NavCtaButtons />
           </div>
         </div>
       </header>
@@ -75,17 +68,7 @@ export default function Home() {
 
         <AnimatedSection delay={0.3}>
           {/* CTAs */}
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md">
-            <a href="#playground" className="w-full sm:w-auto">
-              <Button variant="primary" size="lg" className="w-full gap-2 text-base shadow-lg shadow-indigo-600/25">
-                Experimentar Playground IA
-                <ArrowRight className="w-5 h-5" />
-              </Button>
-            </a>
-            <Button variant="secondary" size="lg" className="w-full sm:w-auto text-base">
-              Agendar Demonstração
-            </Button>
-          </div>
+          <HeroCtaButtons />
 
           {/* Highlights */}
           <div className="mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10 text-xs sm:text-sm text-slate-400">
@@ -164,11 +147,6 @@ export default function Home() {
       {/* Features Section */}
       <AnimatedSection>
         <FeaturesSection />
-      </AnimatedSection>
-
-      {/* Playground Section */}
-      <AnimatedSection>
-        <PlaygroundSection />
       </AnimatedSection>
 
       {/* Pricing Section */}
