@@ -1,55 +1,40 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { POST } from '@/app/api/analyze-resume/route';
+import { POST } from "@/app/api/analyze-resume/route";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { generateObject } from "ai";
 
-/**
- * jsdom's FormData and Node's Request parser reject non-native File objects.
- * We mock the entire Request, including formData() returning a mock FormData
- * with a custom .get() that returns our test File-like objects.
- */
+vi.mock("ai", () => ({
+  generateObject: vi.fn(),
+}));
 
-interface MockFileOptions {
-  name: string;
-  size: number;
-}
-
-function createFilelike({ name, size }: MockFileOptions): File {
-  const buffer = new ArrayBuffer(size);
-  return new File([buffer], name, { type: 'application/octet-stream' });
-}
-
-function createMockFormData(file?: File): { get: (key: string) => File | null } {
-  return {
-    get: (key: string) => {
-      if (key === 'file' && file) return file;
-      return null;
-    },
-  };
-}
+vi.mock("@ai-sdk/groq", () => ({
+  groq: vi.fn(() => "mock-groq"),
+}));
 
 function createMockRequest(options: {
-  formData?: { get: (key: string) => File | null } | null;
-  formDataError?: boolean;
+  payload?: any;
+  payloadError?: boolean;
 }): Request {
-  const { formData = null, formDataError = false } = options;
+  const { payload = null, payloadError = false } = options;
 
   return {
-    method: 'POST',
-    url: 'http://localhost:3000/api/analyze-resume',
-    headers: new Headers(),
-    formData: formDataError
-      ? () => Promise.reject(new Error('Invalid body'))
-      : () => Promise.resolve(formData),
+    method: "POST",
+    url: "http://localhost:3000/api/analyze-resume",
+    headers: new Headers({ "Content-Type": "application/json" }),
+    json: payloadError
+      ? () => Promise.reject(new Error("Invalid JSON"))
+      : () => Promise.resolve(payload),
   } as unknown as Request;
 }
 
-describe('POST /api/analyze-resume', () => {
+describe("POST /api/analyze-resume", () => {
   beforeEach(() => {
     vi.unstubAllEnvs();
-    vi.stubEnv('GOOGLE_GENERATIVE_AI_API_KEY', '');
+    vi.stubEnv("GROQ_API_KEY", "");
+    vi.clearAllMocks();
   });
 
-  it('should return 400 when FormData parsing fails', async () => {
-    const request = createMockRequest({ formDataError: true });
+  it("should return 400 when JSON parsing fails", async () => {
+    const request = createMockRequest({ payloadError: true });
 
     const response = await POST(request);
     const data = await response.json();
@@ -58,83 +43,49 @@ describe('POST /api/analyze-resume', () => {
     expect(data.error).toMatch(/payload inválido/i);
   });
 
-  it('should return 400 when no file field is provided', async () => {
-    const mockFormData = createMockFormData();
-    const request = createMockRequest({ formData: mockFormData });
+  it("should return 400 when resumeText is missing", async () => {
+    const request = createMockRequest({ payload: { jobTitle: "Developer" } });
 
     const response = await POST(request);
     const data = await response.json();
 
     expect(response.status).toBe(400);
-    expect(data.error).toMatch(/nenhum arquivo/i);
+    expect(data.error).toMatch(/payload inválido/i);
   });
 
-  it('should return 400 for unsupported file extension (.png)', async () => {
-    const file = createFilelike({ name: 'photo.png', size: 1024 });
-    const mockFormData = createMockFormData(file);
-    const request = createMockRequest({ formData: mockFormData });
+  it("should return 500 when GROQ_API_KEY is missing", async () => {
+    const request = createMockRequest({
+      payload: { resumeText: "Experiência em React" },
+    });
 
     const response = await POST(request);
     const data = await response.json();
 
-    expect(response.status).toBe(400);
-    expect(data.error).toMatch(/não suportado/i);
+    expect(response.status).toBe(500);
+    expect(data.error).toMatch(/GROQ_API_KEY/i);
   });
 
-  it('should return 400 for unsupported file extension (.exe)', async () => {
-    const file = createFilelike({ name: 'virus.exe', size: 512 });
-    const mockFormData = createMockFormData(file);
-    const request = createMockRequest({ formData: mockFormData });
+  it("should return 200 with valid analysis when API key is provided and generateObject succeeds", async () => {
+    vi.stubEnv("GROQ_API_KEY", "fake-key");
 
-    const response = await POST(request);
-    const data = await response.json();
+    vi.mocked(generateObject).mockResolvedValueOnce({
+      object: {
+        score: 95,
+        summary: "Excelente perfil Groq.",
+        matchingPoints: ["Next.js", "TypeScript"],
+        improvementPoints: [],
+      },
+    } as never);
 
-    expect(response.status).toBe(400);
-    expect(data.error).toMatch(/não suportado/i);
-  });
-
-  it('should return 413 for file exceeding 5MB', async () => {
-    const file = createFilelike({ name: 'big.pdf', size: 6 * 1024 * 1024 });
-    const mockFormData = createMockFormData(file);
-    const request = createMockRequest({ formData: mockFormData });
-
-    const response = await POST(request);
-    const data = await response.json();
-
-    expect(response.status).toBe(413);
-    expect(data.error).toMatch(/muito grande/i);
-  });
-
-  it('should return 200 with valid mock analysis for a .pdf file (no API key)', async () => {
-    const file = createFilelike({ name: 'curriculo.pdf', size: 1024 * 100 });
-    const mockFormData = createMockFormData(file);
-    const request = createMockRequest({ formData: mockFormData });
+    const request = createMockRequest({
+      payload: { resumeText: "Experiência em Next.js e TypeScript" },
+    });
 
     const response = await POST(request);
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data).toHaveProperty('score');
-    expect(data).toHaveProperty('summary');
-    expect(data).toHaveProperty('matchingPoints');
-    expect(data).toHaveProperty('improvementPoints');
-    expect(data.score).toBeGreaterThanOrEqual(0);
-    expect(data.score).toBeLessThanOrEqual(100);
-    expect(Array.isArray(data.matchingPoints)).toBe(true);
-    expect(Array.isArray(data.improvementPoints)).toBe(true);
-  });
-
-  it('should return 200 with valid mock analysis for a .docx file (no API key)', async () => {
-    const file = createFilelike({ name: 'curriculo.docx', size: 1024 * 50 });
-    const mockFormData = createMockFormData(file);
-    const request = createMockRequest({ formData: mockFormData });
-
-    const response = await POST(request);
-    const data = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(data).toHaveProperty('score');
-    expect(data).toHaveProperty('summary');
-    expect(Array.isArray(data.matchingPoints)).toBe(true);
+    expect(data.score).toBe(95);
+    expect(data.source).toBe("groq-ai");
   });
 });

@@ -2,9 +2,24 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PlaygroundSection } from '@/components/playground/playground-section';
 
+vi.mock('pdfjs-dist', () => ({
+  version: '4.0.0',
+  GlobalWorkerOptions: {},
+  getDocument: vi.fn().mockReturnValue({
+    promise: Promise.resolve({
+      numPages: 1,
+      getPage: vi.fn().mockResolvedValue({
+        getTextContent: vi.fn().mockResolvedValue({
+          items: [{ str: 'Mocked PDF Text' }],
+        }),
+      }),
+    }),
+  }),
+}));
+
 describe('PlaygroundSection', () => {
   beforeEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders initial empty state with dropzone and aria-live="polite"', () => {
