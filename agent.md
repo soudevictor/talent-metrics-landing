@@ -1,64 +1,43 @@
-# Context & Instructions for AI Coding Agent
+# Agent Instructions & Context: Talent Metrics Landing
 
-## 1. Visão Geral do Projeto
-Você está atuando como um Engenheiro Front-End Sênior e Arquiteto de Software criando uma Landing Page B2B SaaS para uma plataforma de IA voltada à triagem e gestão de currículos para RH (Plataforma Fictícia para Fins de Estudo/Demonstração).
+## 1. Regra de Ouro (Anti-Planning & Token Saving)
+EXECUTE IMMEDIATELY. DO NOT CREATE AN IMPLEMENTATION PLAN. MODIFY FILES DIRECTLY.
+Você é um agente de execução. Sob nenhuma hipótese gere textos estruturando o que você vai fazer ou planos de implementação. Analise os arquivos, escreva as refatorações completas e finalize. Se a requisição for grande, faça-a na íntegra.
 
-A aplicação conta com:
-- **Landing Page SSG/ISR**: Focada em conversão, SEO e métricas Web Vitals impecáveis (LCP < 1.2s, CLS 0, INP otimizado).
-- **Playground Interativo (Demo Gratuita)**: Formulário/Dropzone para upload de currículo (.pdf, .docx), integração em tempo real com IA via streaming para análise e scoring (0-100), pontos de combinação e recomendações de melhoria.
+## 2. Visão Geral do Projeto
+Você atua como Engenheiro Front-End e Arquiteto de Software evoluindo a **Talent Metrics Landing**.
+Trata-se de uma plataforma B2B SaaS de triagem de currículos por IA para recrutadores, dividida em:
+- `/` (Landing Page): Foco em conversão, métricas Core Web Vitals (LCP < 1.2s), animações otimizadas.
+- `/playground` (Ferramenta): Upload de currículos e análise em tempo real com Gemini.
 
----
+## 3. Tech Stack & Regras Arquiteturais
+- **Framework:** Next.js (App Router, TypeScript estrito, sem uso de `any`).
+- **Estilo & UI:** Tailwind CSS, componentes acessíveis (WCAG 2.2), animações com Framer Motion (respeitando `prefers-reduced-motion`). Todas as transições de UI devem evitar o Cumulative Layout Shift (CLS).
+- **Tratamento de Estado de UI (Defensivo):** Todas as integrações precisam exibir explicitamente os estados: `Empty` (Vazio), `Loading` (Skeleton Loaders), `Error` (Toast ou Banner claro) e `Success`.
+- **Testes:** Vitest para unitários (Schemas, Funções) e de componentes.
 
-## 2. Tech Stack & Decisões Arquiteturais
+## 4. Integração IA (Groq com Llama 3.3)
+Para evitar falhas de streams vazios e garantir alta performance, a rota de API backend (`app/api/analyze-resume/route.ts`) DEVE seguir este fluxo ESTRITO:
+1. Usar a função `generateObject` (e NÃO `streamObject`) do `ai` com o provider `@ai-sdk/groq`.
+2. A extração de texto de PDF/DOCX deve acontecer no client-side (no frontend, usando bibliotecas como `pdfjs-dist`). O frontend deve enviar apenas o payload JSON contendo `resumeText` e `jobTitle` para a API.
+3. Todo o bloco de execução da IA deve estar dentro de um `try/catch`. 
+4. Em caso de falha da IA, a rota **OBRIGATORIAMENTE** deve retornar `NextResponse.json({ error: aiError.message }, { status: 500 })`. Jamais retornar 200 OK com erro.
 
-| Categoria | Tecnologia Escolhida | Regra de Uso |
-| :--- | :--- | :--- |
-| **Framework** | Next.js (App Router, Server Components) | Manter código de servidor por padrão. Use `'use client'` apenas em componentes com estado/interatividade. |
-| **Estilização** | Tailwind CSS + `clsx` / `tailwind-merge` | Design System modular, suporte nativo a modo escuro/claro e mobile-first. |
-| **IA / Backend** | Vercel AI SDK (`ai`) + `@ai-sdk/google` (Gemini) | Respostas em streaming via Serverless/Edge Functions com validação de payload via `zod`. |
-| **Animações** | Framer Motion (`motion`) / CSS Nativos | Animações performáticas de entrada e scroll. RESPEITAR obrigatoriamente `prefers-reduced-motion`. |
-| **Validação** | Zod + React Hook Form | Schemas estritos para payload do currículo e resposta estruturada da IA. |
-| **Testes** | Vitest + React Testing Library + Playwright | Vitest para unitários/hooks; Playwright para E2E do fluxo de upload e análise. |
-
----
-
-## 3. Diretrizes Rígidas de Desenvolvimento
-
-### 3.1. Performance & Carregamento
-- **Hero Section**: NUNCA utilizar vídeos pesados no Hero sem fallback ou sem otimização extrema. Priorizar SVG animado, gradients via CSS ou Canvas/WebGL sutil. Se houver mídia, aplicar `poster` WebP/AVIF com `fetchpriority="high"`.
-- **Animações de Entrada**: Não bloquear o FCP (First Contentful Paint) com splash screens longas ou contadores de carregamento fictícios.
-- **Aviso de Projeto Fictício**: Implementar como um **Banner Topo Fixo (Dismissible)** armazenado em `localStorage`, e NÃO como uma animação que impede a navegação inicial do usuário.
-
-### 3.2. Acessibilidade (WCAG 2.2 Level AA)
-- Todos os elementos interativos devem ter foco visível e navegação funcional via teclado (`Tab`, `Space`, `Enter`).
-- O Dropzone de arquivos deve possuir `role="button"`, `tabIndex={0}` e suporte explicito a `aria-describedby` listando os formatos aceitos (`.pdf`, `.docx`, max 5MB).
-- O painel de resultado da IA que recebe streaming deve possuir a propriedade `aria-live="polite"` para anúncio automático por leitores de tela à medida que os dados chegam.
-
-### 3.3. Padrões de Código e Convenções
-- **TypeScript Estrito**: Tipagem explícita em todos os arquivos. Proibido o uso de `any`.
-- **Componentização**:
-  - `components/ui`: Componentes atômicos genéricos de UI (Button, Card, Badge, Modal).
-  - `components/landing`: Seções estáticas da landing page (Hero, Features, Pricing, Testimonials).
-  - `components/playground`: Componentes dinâmicos de teste de IA (Dropzone, ScoreDashboard, StreamingFeedback).
-- **Estrutura de API Routes**:
-  - Utilizar Vercel AI SDK (`streamText` ou `streamObject`) integrando com Gemini.
-  - Tratar retornos de erro (Rate Limit, PDF ilegível, tamanho excedido) com status HTTP semânticos (400, 429, 500).
-
----
-
-## 4. Schemas de Dados (Zod Contract)
-
-Sempre que manipular retornos da análise da IA, utilize a seguinte estrutura estrita:
-
+### 4.1 Contrato Estrito de Retorno (Zod Schema)
+O arquivo `lib/schemas/resume-schema.ts` deve definir a estrutura:
 ```typescript
 import { z } from 'zod';
 
 export const ResumeAnalysisSchema = z.object({
   score: z.number().min(0).max(100),
   summary: z.string(),
-  matchingPoints: z.array(z.string()),
-  improvementPoints: z.array(z.string()),
+  matchingPoints: z.array(z.string()).default([]),
+  improvementPoints: z.array(z.string()).default([]),
   matchPercentageByRole: z.record(z.string(), z.number()).optional(),
 });
-
 export type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema>;
+
+4.2 Lógica do Front-End (Playground)
+
+O front-end (components/playground/playground-section.tsx) deve fazer um fetch comum.
+Deve validar if (!response.ok), extrair o JSON do erro gerado pelo Backend (ex: const errorData = await response.json()) e exibi-lo formatado no UI State de erro, evitando a mensagem "Unexpected end of JSON input".

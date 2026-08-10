@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { X, Sparkles } from 'lucide-react';
 
-const STORAGE_KEY = 'talent_metrics_demo_banner_dismissed';
+const STORAGE_KEY = 'hasDismissedDisclaimer';
 
 export function DemoBanner() {
   const [isVisible, setIsVisible] = useState(false);
