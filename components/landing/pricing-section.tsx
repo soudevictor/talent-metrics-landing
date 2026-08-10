@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 const plans = [
   {
     name: 'Starter',
-    price: 'R$ 299',
+    price: 'R$ 299,99',
     period: '/mês',
     description: 'Ideal para pequenas empresas e startups com contratações pontuais.',
     features: [
@@ -21,7 +21,7 @@ const plans = [
   },
   {
     name: 'Professional',
-    price: 'R$ 799',
+    price: 'R$ 799,99',
     period: '/mês',
     description: 'Para times de RH em crescimento com volume constante de vagas.',
     features: [

@@ -18,7 +18,7 @@ export function PlaygroundClient() {
       <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-indigo-600/5 blur-3xl -z-10 pointer-events-none" />
 
       {/* Header */}
-      <header className="w-full border-b border-slate-800/80 bg-slate-950/40 backdrop-blur-md sticky top-9 z-40">
+      <header className="w-full border-b border-slate-800/80 bg-slate-950/40 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link
             href="/"

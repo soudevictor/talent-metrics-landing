@@ -73,4 +73,26 @@ describe('ResumeAnalysisSchema', () => {
     });
     expect(result.success).toBe(true);
   });
+
+  it('should set default empty arrays when matchingPoints and improvementPoints are omitted', () => {
+    const { matchingPoints, improvementPoints, ...payload } = validPayload;
+    const result = ResumeAnalysisSchema.safeParse(payload);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.matchingPoints).toEqual([]);
+      expect(result.data.improvementPoints).toEqual([]);
+    }
+  });
+
+  it('should fallback matchPercentageByRole to {} when malformed', () => {
+    const payload = {
+      ...validPayload,
+      matchPercentageByRole: 'invalid_role_map' as unknown,
+    };
+    const result = ResumeAnalysisSchema.safeParse(payload);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.matchPercentageByRole).toEqual({});
+    }
+  });
 });

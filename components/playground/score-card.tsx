@@ -6,6 +6,7 @@ import type { ResumeAnalysis } from '@/lib/schemas/resume-schema';
 
 interface ScoreCardProps {
   data: ResumeAnalysis;
+  isStreaming?: boolean;
 }
 
 function getScoreColor(score: number): string {
@@ -28,7 +29,7 @@ function getScoreLabel(score: number): string {
   return 'Precisa Melhorar';
 }
 
-export function ScoreCard({ data }: ScoreCardProps) {
+export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
   const { score, summary, matchingPoints, improvementPoints } = data;
 
   return (
@@ -37,7 +38,13 @@ export function ScoreCard({ data }: ScoreCardProps) {
       aria-atomic="true"
       className="w-full rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 backdrop-blur-xl space-y-6"
     >
-      {/* Score Header */}
+      {isStreaming ? (
+        <div className="flex items-center gap-2 text-xs text-indigo-300 font-medium pb-2 border-b border-slate-800">
+          <span className="inline-block h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+          Análise em andamento...
+        </div>
+      ) : null}
+
       <div className="flex items-center gap-4">
         {/* Circular Score Indicator */}
         <div className="relative w-20 h-20 shrink-0">

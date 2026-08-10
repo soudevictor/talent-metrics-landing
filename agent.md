@@ -1,57 +1,52 @@
 # Context & Instructions for AI Coding Agent
 
 ## 1. Visão Geral do Projeto
-
-[cite_start]Você está atuando como um Engenheiro Front-End Sênior e Arquiteto de Software evoluindo a aplicação **Talent Metrics Landing** (`talent-metrics-landing`). [cite_start]Trata-se de uma plataforma B2B SaaS de triagem e análise de currículos por IA voltada para recrutadores de RH[cite: 2, 3].
+Você está atuando como Engenheiro Front-End Sênior e Arquiteto de Software evoluindo a aplicação **Talent Metrics Landing** (`talent-metrics-landing`). Trata-se de uma plataforma B2B SaaS de triagem e análise de currículos por IA voltada para recrutadores de RH.
 
 A aplicação divide-se estritamente em duas rotas principais:
-
-1. [cite_start]**Landing Page Promocional (`app/page.tsx`)**: Rota principal (`/`), focada em apresentação do produto, proposta de valor, funcionalidades, planos de preço, depoimentos e conversão[cite: 37, 80]. [cite_start]Renderizada via SSG/ISR para Web Vitals impecáveis (LCP < 1.2s, CLS 0)[cite: 37].
-2. [cite_start]**Playground de Teste da Ferramenta (`app/playground/page.tsx`)**: Rota dedicada (`/playground`) onde o recrutador pode testar a ferramenta gratuitamente de forma simplificada[cite: 7, 38].
+1. **Landing Page Promocional (`app/page.tsx`)**: Rota principal (`/`), focada em apresentação do produto, proposta de valor, funcionalidades, planos de preço, depoimentos e conversão. Renderizada via SSG/ISR para Web Vitals impecáveis (LCP < 1.2s, CLS 0).
+2. **Playground de Teste da Ferramenta (`app/playground/page.tsx`)**: Rota dedicada (`/playground`) onde o recrutador testa a ferramenta de análise de currículos em tempo real.
 
 ---
 
 ## 2. Tech Stack & Decisões Arquiteturais
 
-| Categoria        | Tecnologia Escolhida                                 | Regra de Uso                                                                                                                                    |
-| :--------------- | :--------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Framework**    | Next.js (App Router, Server Components)              | [cite_start]Manter lógica no servidor por padrão[cite: 68]. [cite_start]Usar `'use client'` apenas em componentes com interatividade[cite: 38]. |
-| **Estilização**  | Tailwind CSS + `clsx` + `tailwind-merge`             | [cite_start]Design System modular com suporte a mobile-first e classe utilitária `cn()`[cite: 64, 154, 164].                                    |
-| **IA / Backend** | Vercel AI SDK (`ai`) + `@ai-sdk/google` (Gemini 2.0) | [cite_start]Respostas em streaming estruturado via Serverless/Edge Function `/api/analyze-resume`[cite: 41, 107].                               |
-| **Validação**    | Zod (`ResumeAnalysisSchema`) + React Hook Form       | [cite_start]Schema estrito para estruturar o retorno da IA (nota 0-100, resumo, pontos de alinhamento e melhoria)[cite: 42, 65].                |
-| **Animações**    | Framer Motion (`motion`) / CSS Nativos               | [cite_start]Animações leves respeitando obrigatoriamente a regra `prefers-reduced-motion`[cite: 48, 163].                                       |
-| **Testes**       | Vitest + React Testing Library + Playwright          | Vitest para unitários/componentes; [cite_start]Playwright para E2E do fluxo de upload[cite: 34, 49, 50].                                        |
+| Categoria | Tecnologia Escolhida | Regra de Uso |
+| :--- | :--- | :--- |
+| **Framework** | Next.js (App Router, Server Components) | Manter lógica no servidor por padrão. Usar `'use client'` apenas onde houver interatividade. |
+| **Estilização** | Tailwind CSS + `clsx` + `tailwind-merge` | Design System modular com suporte a mobile-first e classe utilitária `cn()`. |
+| **IA / Backend** | Vercel AI SDK (`ai`) + `@ai-sdk/google` (Gemini 2.0) | Respostas em streaming estruturado via Serverless Function em `/api/analyze-resume`. |
+| **Validação** | Zod (`ResumeAnalysisSchema`) + React Hook Form | Schema estrito para estruturar o retorno da IA (nota 0-100, resumo, pontos fortes e melhorias). |
+| **Animações** | Framer Motion (`motion`) / CSS Nativos | Animações fluidas de entrada/scroll. Respeitar obrigatoriamente `prefers-reduced-motion`. |
+| **Testes** | Vitest + React Testing Library + Playwright | Vitest para unitários/componentes; Playwright para E2E do fluxo de upload. |
 
 ---
 
 ## 3. Diretrizes Rígidas de Desenvolvimento & Acessibilidade
 
-### 3.1. Estrutura de Rotas e Navegação
+### 3.1. Correção de Animações e UX
+- **Revisão do `AnimatedSection` (`components/ui/animated-section.tsx`)**:
+  - Corrigir o travamento de hidratação e a margem de viewport. O componente deve animar suavemente (fade-in + elevação de Y: 20px para 0px) sem piscar ou bloquear elementos na renderização inicial.
+  - Aplicar animações sutis de hover nos cards de recursos e preços.
 
-- [cite_start]`app/page.tsx`: Landing Page promocional limpa[cite: 68, 80]. Botões de CTA "Testar Grátis" ou "Experimentar" devem redirecionar para `/playground`.
-- `app/playground/page.tsx`: Página isolada contendo o formulário de contextualização da vaga, a Dropzone de upload e o dashboard de resultado (`ScoreCard`).
-- [cite_start]`app/api/analyze-resume/route.ts`: Endpoint da API responsável por receber o arquivo (PDF/DOCX), extrair o texto e realizar o streaming do schema Zod com o Gemini via Vercel AI SDK[cite: 39, 106, 107].
+### 3.2. Integração da IA no Playground (`/playground`)
+- Front-End (`components/playground/playground-section.tsx`): Consumir o endpoint `/api/analyze-resume` via streaming usando `experimental_useObject` (Vercel AI SDK) para atualizar o dashboard `ScoreCard` em tempo real.
+- Backend (`app/api/analyze-resume/route.ts`):
+  - Ler o `GOOGLE_GENERATIVE_AI_API_KEY` do ambiente.
+  - Se a chave estiver presente, fazer o streaming estruturado com Gemini 2.0 Flash baseado no `ResumeAnalysisSchema`.
+  - Se a chave estiver ausente, retornar o mock com simulação de tempo realista para ambiente de desenvolvimento.
 
-### 3.2. UX Defensiva & Estados de UI (Obrigatório)
-
-[cite_start]Tanto no Playground quanto na landing page, deve-se tratar rigorosamente os 4 estados de interface[cite: 62, 155]:
-
-1. [cite_start]**Empty State**: Zona de drop com bordas tracejadas, ícone explicativo e formatos aceitos (`.pdf`, `.docx`, máx. 5MB)[cite: 43, 155].
-2. [cite_start]**Loading State**: Skeleton Loader com dimensões exatas do dashboard para zerar o Cumulative Layout Shift (CLS) durante o streaming da IA[cite: 44, 156].
-3. [cite_start]**Error State**: Fallbacks visuais amigáveis para falhas de leitura, arquivo corrompido, tamanho excedido (>5MB) ou limite de cota da API[cite: 45, 157].
-4. [cite_start]**Streaming State**: Apresentação progressiva da pontuação (0 a 100), resumo executivo e tópicos de recomendação[cite: 44, 158].
-
-### 3.3. Acessibilidade (WCAG 2.2 Level AA)
-
-- [cite_start]**Teclado**: A Dropzone deve possuir `tabIndex={0}`, `role="button"` e ser acionável via `Space` ou `Enter`[cite: 46, 98].
-- [cite_start]**Leitores de Tela**: O container que recebe a análise por streaming no `/playground` DEVE ter a propriedade `aria-live="polite"`[cite: 47, 101, 161].
-- [cite_start]**Banner Legal Fixo**: Implementar um `DisclaimerBanner` no topo de `app/layout.tsx` (avisando sobre o caráter fictício para estudo) com botão para ocultar e estado persistido no `localStorage` (`hasDismissedDisclaimer`)[cite: 32, 93].
+### 3.3. Acessibilidade (WCAG 2.2 Level AA) & Interatividade
+- **Navegação de Upload**: A Dropzone deve possuir `tabIndex={0}`, `role="button"` e aceitar acionamento via teclado (`Space` / `Enter`).
+- **Anúncio de Stream**: O container de resultados no `/playground` deve possuir `aria-live="polite"`.
+- **Disclaimer Banner**: Exibir o banner legal superior fixo avisando sobre o projeto de estudo, gravando a dispensa no `localStorage`.
+- **Modais Institucionais**: CTAs de "Agendar Demonstração" e "Entrar" devem abrir um modal explicativo com links do portfólio e GitHub do desenvolvedor (`soudevictor`).
 
 ---
 
-## 4. Schemas de Dados (Zod Contract)
+## 4. Schema de Dados da IA (Zod Contract)
 
-[cite_start]Utilize e exporte este contrato de dados em `lib/schemas/resume-schema.ts`[cite: 65]:
+O contrato de dados em `lib/schemas/resume-schema.ts` deve seguir a estrutura:
 
 ```typescript
 import { z } from 'zod';
@@ -65,22 +60,20 @@ export const ResumeAnalysisSchema = z.object({
 });
 
 export type ResumeAnalysis = z.infer<typeof ResumeAnalysisSchema>;
+```
+
+---
 
 ## 5. Estratégia de Testes Automatizados (Vitest)
 
-Todos os fluxos cruciais devem ser cobertos com testes em tests/:
+Todos os fluxos cruciais devem ser validados em `tests/`:
+1. `tests/schemas/resume-schema.test.ts`: Validação de payloads válidos e rejeição de dados fora dos limites do Zod.
+2. `tests/components/dropzone.test.tsx`: Validação do upload, aceitação de `.pdf`/`.docx` e bloqueio de extensões não permitidas.
+3. `tests/api/analyze-resume.test.ts`: Teste do endpoint com mocks do AI SDK e cenários de erro HTTP (400, 500).
 
-    tests/schemas/resume-schema.test.ts: Validação de objetos válidos e rejeição de dados fora do intervalo (ex: score < 0 ou > 100).
+---
 
-    tests/components/dropzone.test.tsx: Teste do componente Dropzone para upload de extensões permitidas (.pdf, .docx) e rejeição de inválidas (.png, .exe) com mensagens de erro.
-
-    tests/api/analyze-resume.test.ts: Mock de chamadas da Vercel AI SDK e teste de tratamento de erros HTTP (400, 500).
-
-## 6. Instruções de Implementação para o Agent
-
-    Escreva código TypeScript estrito (strict: true), limpo e sem o uso de any.
-
-    Não misture o código da Landing Page (/) com o da ferramenta de teste (/playground).
-
-    Ao finalizar as modificações, rode a suíte de testes do Vitest e garanta 100% de aprovação antes de concluir a tarefa.
-```
+## 6. Instruções de Execução para o Agent
+1. Escreva código TypeScript estrito (`strict: true`), limpo e sem o uso de `any`.
+2. Garanta que todas as animações da Landing Page funcionem e que o streaming da IA no Playground atualize o placar dinamicamente.
+3. Ao finalizar, rode a suíte de testes (`npx vitest run`) e garanta 100% de aprovação antes de concluir.

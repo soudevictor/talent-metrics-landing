@@ -15,7 +15,7 @@ export default function Home() {
       <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-purple-600/5 blur-3xl -z-10 pointer-events-none" />
 
       {/* Header / Navbar */}
-      <header className="w-full border-b border-slate-800/80 bg-slate-950/40 backdrop-blur-md sticky top-9 z-40">
+      <header className="w-full border-b border-slate-800/80 bg-slate-950/40 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
@@ -66,7 +66,7 @@ export default function Home() {
           </p>
         </AnimatedSection>
 
-        <AnimatedSection delay={0.3}>
+        <AnimatedSection delay={0.3} className='w-full flex flex-col items-center justify-center'>
           {/* CTAs */}
           <HeroCtaButtons />
 

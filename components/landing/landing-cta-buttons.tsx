@@ -82,7 +82,7 @@ export function HeroCtaButtons() {
         <Button
           variant="primary"
           size="lg"
-          className="w-full gap-2 text-base shadow-lg shadow-indigo-600/25"
+          className="w-full py-8 gap-2 text-base shadow-lg shadow-indigo-600/25"
         >
           Experimentar Playground IA
           <ArrowRight className="w-5 h-5" />
@@ -91,7 +91,7 @@ export function HeroCtaButtons() {
       <Button
         variant="secondary"
         size="lg"
-        className="w-full sm:w-auto text-base"
+        className="w-full sm:w-auto py-8 text-base"
         onClick={() => setIsDemoOpen(true)}
       >
         Agendar Demonstração
