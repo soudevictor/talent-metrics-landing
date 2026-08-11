@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     const systemPrompt = `Você é um recrutador sênior e especialista em análise de currículos.
-Analise o currículo fornecido e retorne uma avaliação técnica estruturada.
+Analise o currículo fornecido e retorne uma avaliação técnica estruturada em formato JSON.
 Requisitos obrigatórios:
 - Forneça uma nota de 0 a 100 (score) baseada na qualidade geral${
       jobTitle ? ` e no alinhamento técnico com a vaga de "${jobTitle}"` : ""
