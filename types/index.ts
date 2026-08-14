@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 export interface NavItem {
   title: string;
   href: string;
@@ -9,9 +7,9 @@ export interface NavItem {
 
 export interface Feature {
   id: string;
+  iconName: string;
   title: string;
   description: string;
-  icon?: string;
 }
 
 export interface PricingTier {
@@ -31,5 +29,13 @@ export interface Testimonial {
   author: string;
   role: string;
   company: string;
+  rating: number;
   avatarUrl?: string;
+}
+
+export interface SampleResume {
+  id: string;
+  label: string;
+  description: string;
+  content: string;
 }

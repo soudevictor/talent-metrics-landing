@@ -1,27 +1,10 @@
-import { Star, Quote } from 'lucide-react';
+import { Star } from 'lucide-react';
+import testimonialsData from '@/data/testimonials.json';
+import type { Testimonial } from '@/types';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const testimonials = [
-  {
-    quote: 'Reduzimos nosso tempo de contratação de 30 para 8 dias. O scoring da TalentMetrics é incrivelmente preciso para nossas vagas de engenharia.',
-    author: 'Mariana Silva',
-    role: 'Head de People',
-    company: 'TechFlow Brasil',
-  },
-  {
-    quote: 'A funcionalidade de vaga cega e anonimização nos ajudou a atingir nossas metas de diversidade com dados 100% objetivos.',
-    author: 'Carlos Eduardo',
-    role: 'Diretor de RH',
-    company: 'Grupo Nexo',
-  },
-  {
-    quote: 'Processamos mais de 5.000 currículos no último trimestre sem aumentar a equipe de recrutamento. O ROI foi imediato no primeiro mês.',
-    author: 'Fernanda Lima',
-    role: 'Lead Recruiter',
-    company: 'Inovare SaaS',
-  },
-];
+const testimonials = testimonialsData as Testimonial[];
 
 export function TestimonialsSection() {
   return (
@@ -42,12 +25,12 @@ export function TestimonialsSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {testimonials.map((t, index) => (
-          <Card key={index} className="flex flex-col justify-between hover:border-slate-700 transition-all">
+        {testimonials.map((t) => (
+          <Card key={t.id} className="flex flex-col justify-between hover:border-slate-700 transition-all">
             <CardHeader>
-              <div className="flex gap-1 text-amber-400 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" />
+              <div className="flex gap-1 text-amber-400 mb-4" aria-label={`Avaliação: ${t.rating} de 5 estrelas`}>
+                {Array.from({ length: t.rating }).map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400" aria-hidden="true" />
                 ))}
               </div>
               <p className="text-slate-300 text-sm italic leading-relaxed">

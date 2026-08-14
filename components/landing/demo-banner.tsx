@@ -31,7 +31,7 @@ export function DemoBanner() {
       <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-center text-center">
         <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" aria-hidden="true" />
         <span>
-          <strong>Projeto Demonstrativo para Estudo:</strong> Plataforma fictícia de triagem de currículos powered by AI.
+          <strong>Projeto Demonstrativo para Estudo:</strong> Plataforma fictícia de triagem de currículos impulsionado por IA.
         </span>
       </div>
       <button

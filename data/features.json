@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ia-generativa",
+    "iconName": "Cpu",
+    "title": "IA Generativa Especializada em RH",
+    "description": "Algoritmos treinados especificamente em recrutamento e avaliação técnica sem vieses inconscientes."
+  },
+  {
+    "id": "scoring-fit",
+    "iconName": "Target",
+    "title": "Scoring de Fit com a Vaga",
+    "description": "Pontuação de 0 a 100 calculada instantaneamente comparando os requisitos da vaga ao perfil do candidato."
+  },
+  {
+    "id": "triagem-rapida",
+    "iconName": "Clock",
+    "title": "Triagem em Segundos",
+    "description": "Reduza o tempo médio de primeira leitura de 14 dias para menos de 3 segundos por currículo."
+  },
+  {
+    "id": "relatorios-executivos",
+    "iconName": "BarChart3",
+    "title": "Relatórios Executivos Automáticos",
+    "description": "Pontos fortes, resumos e sugestões de perguntas para entrevistas gerados automaticamente."
+  },
+  {
+    "id": "conformidade-lgpd",
+    "iconName": "ShieldCheck",
+    "title": "Conformidade LGPD & GDPR",
+    "description": "Anonimização de dados pessoais e criptografia de ponta a ponta durante o processamento."
+  },
+  {
+    "id": "integracao-workflow",
+    "iconName": "Zap",
+    "title": "Integrado ao seu Workflow",
+    "description": "Exportação fácil de candidatos pré-selecionados diretamente para o seu ATS favorito."
+  }
+]

@@ -1,56 +1,11 @@
 import { Check } from 'lucide-react';
+import pricingData from '@/data/pricing.json';
+import type { PricingTier } from '@/types';
 import { PricingCtaButton } from '@/components/landing/pricing-cta-button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const plans = [
-  {
-    name: 'Starter',
-    price: 'R$ 299,99',
-    period: '/mês',
-    description: 'Ideal para pequenas empresas e startups com contratações pontuais.',
-    features: [
-      'Até 200 currículos/mês',
-      'Análise com Gemini AI',
-      'Scoring de fit básico',
-      'Exportação em CSV',
-      'Suporte via e-mail',
-    ],
-    ctaText: 'Começar Teste Grátis',
-    isPopular: false,
-  },
-  {
-    name: 'Professional',
-    price: 'R$ 799,99',
-    period: '/mês',
-    description: 'Para times de RH em crescimento com volume constante de vagas.',
-    features: [
-      'Até 1.500 currículos/mês',
-      'Análise com Gemini 2.0 Flash',
-      'Scoring de fit + Perguntas de Entrevista',
-      'Anonimização de dados para vagas cegas',
-      'Integração ATS (Greenhouse, Gupy)',
-      'Suporte prioritário',
-    ],
-    ctaText: 'Testar Plano Pro',
-    isPopular: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Personalizado',
-    period: '',
-    description: 'Para grandes corporações que exigem volumetria ilimitada e SLA garantido.',
-    features: [
-      'Currículos ilimitados',
-      'Modelo de IA customizado por cultura',
-      'SLA de 99.9% de disponibilidade',
-      'SSO (SAML/Okta) + Auditoria',
-      'Gerente de conta dedicado',
-    ],
-    ctaText: 'Falar com Consultor',
-    isPopular: false,
-  },
-];
+const plans = pricingData as PricingTier[];
 
 export function PricingSection() {
   return (
@@ -71,9 +26,9 @@ export function PricingSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-        {plans.map((plan, index) => (
+        {plans.map((plan) => (
           <Card
-            key={index}
+            key={plan.id}
             className={`relative flex flex-col justify-between ${
               plan.isPopular
                 ? 'border-indigo-500/50 bg-slate-900/80 shadow-2xl shadow-indigo-500/10'
@@ -103,8 +58,8 @@ export function PricingSection() {
                   O que está incluído:
                 </p>
                 <ul className="space-y-2.5">
-                  {plan.features.map((feature, fIndex) => (
-                    <li key={fIndex} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
                       <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       <span>{feature}</span>
                     </li>
@@ -116,7 +71,7 @@ export function PricingSection() {
             <CardFooter className="mt-8">
               <PricingCtaButton
                 label={plan.ctaText}
-                isPopular={plan.isPopular}
+                isPopular={plan.isPopular ?? false}
               />
             </CardFooter>
           </Card>
