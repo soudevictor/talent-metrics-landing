@@ -32,9 +32,9 @@ interface LoginModalContentProps {
 function LoginModalContent({ onClose }: LoginModalContentProps) {
   return (
     <div className="space-y-4">
-      <p className="text-sm text-zinc-300 leading-relaxed">
-        O <strong className="text-white">TalentMetrics</strong> é um{' '}
-        <strong className="text-emerald-400">
+      <p className="text-sm text-text-muted leading-relaxed">
+        O <strong className="text-text-primary">TalentMetrics</strong> é um{' '}
+        <strong className="text-accent">
           projeto demonstrativo para fins de estudo
         </strong>
         . Esta plataforma SaaS fictícia foi criada para demonstrar habilidades
@@ -42,8 +42,8 @@ function LoginModalContent({ onClose }: LoginModalContentProps) {
         interfaces B2B modernas.
       </p>
 
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4 space-y-3">
-        <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+      <div className="rounded-xl border border-border-subtle bg-canvas/60 p-4 space-y-3">
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">
           Conheça o desenvolvedor
         </p>
         <div className="flex flex-col gap-2">
@@ -51,31 +51,31 @@ function LoginModalContent({ onClose }: LoginModalContentProps) {
             href="https://github.com/soudevictor"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 text-sm text-zinc-400 hover:text-white transition-colors group rounded-lg p-2 hover:bg-zinc-800/50"
+            className="flex items-center gap-2.5 text-sm text-text-muted hover:text-text-primary transition-colors group rounded-lg p-2 hover:bg-surface"
           >
-            <GithubIcon className="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" />
+            <GithubIcon className="w-4 h-4 text-text-muted group-hover:text-text-primary transition-colors" />
             <span>GitHub — soudevictor</span>
-            <svg className="w-3 h-3 text-zinc-600 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+            <svg className="w-3 h-3 text-text-muted/50 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
           </a>
           <a
             href="https://www.linkedin.com/in/soudevictor/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2.5 text-sm text-zinc-400 hover:text-white transition-colors group rounded-lg p-2 hover:bg-zinc-800/50"
+            className="flex items-center gap-2.5 text-sm text-text-muted hover:text-text-primary transition-colors group rounded-lg p-2 hover:bg-surface"
           >
-            <svg className="w-4 h-4 text-zinc-500 group-hover:text-blue-400 transition-colors" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-4 h-4 text-text-muted group-hover:text-blue-400 transition-colors" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
               <rect width="4" height="12" x="2" y="9" />
               <circle cx="4" cy="4" r="2" />
             </svg>
             <span>LinkedIn — soudevictor</span>
-            <svg className="w-3 h-3 text-zinc-600 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+            <svg className="w-3 h-3 text-text-muted/50 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
           </a>
         </div>
       </div>
 
       <div className="flex justify-end pt-2">
-        <Button variant="primary" size="sm" onClick={onClose} className="bg-emerald-600 hover:bg-emerald-700">
+        <Button variant="primary" size="sm" onClick={onClose}>
           Entendido
         </Button>
       </div>
@@ -96,7 +96,7 @@ export function NavCtaButtons() {
         Entrar
       </Button>
       <Link href="/playground">
-        <Button variant="primary" size="sm" className="bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/20">
+        <Button variant="primary" size="sm" className="shadow-lg shadow-accent/20">
           Testar Agora
         </Button>
       </Link>
@@ -122,7 +122,7 @@ export function HeroCtaButtons() {
         <Button
           variant="primary"
           size="lg"
-          className="w-full py-8 gap-2 text-base bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/25"
+          className="w-full py-8 gap-2 text-base shadow-lg shadow-accent/25"
         >
           Experimentar Playground IA
           <ArrowRight className="w-5 h-5" />

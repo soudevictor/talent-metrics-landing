@@ -148,10 +148,10 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
         data-testid="dropzone"
         className={cn(
           'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 sm:p-10 transition-all duration-200 cursor-pointer',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
           isDragOver && !disabled
-            ? 'border-indigo-400 bg-indigo-500/10 scale-[1.01]'
-            : 'border-slate-700 bg-slate-900/40 hover:border-slate-500 hover:bg-slate-900/60',
+            ? 'border-accent bg-accent-glow scale-[1.01]'
+            : 'border-border-subtle bg-surface/40 hover:border-border-hover hover:bg-surface',
           disabled && 'opacity-50 pointer-events-none',
           error && 'border-red-500/50 bg-red-500/5'
         )}
@@ -168,11 +168,11 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
         />
 
         {selectedFile ? (
-          <div className="flex items-center gap-3 text-slate-200">
-            <FileText className="w-8 h-8 text-indigo-400 shrink-0" />
+          <div className="flex items-center gap-3 text-text-primary">
+            <FileText className="w-8 h-8 text-accent shrink-0" />
             <div className="text-left">
               <p className="text-sm font-medium truncate max-w-[250px]">{selectedFile.name}</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-text-muted">
                 {(selectedFile.size / 1024).toFixed(0)} KB
               </p>
             </div>
@@ -183,7 +183,7 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
                 clearFile();
               }}
               aria-label="Remover arquivo selecionado"
-              className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+              className="p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <X className="w-4 h-4" />
             </button>
@@ -192,14 +192,14 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
           <>
             <div className={cn(
               'w-12 h-12 rounded-full flex items-center justify-center transition-colors',
-              isDragOver ? 'bg-indigo-500/20' : 'bg-slate-800'
+              isDragOver ? 'bg-accent-glow' : 'bg-surface-elevated'
             )}>
-              <Upload className={cn('w-6 h-6', isDragOver ? 'text-indigo-400' : 'text-slate-400')} />
+              <Upload className={cn('w-6 h-6', isDragOver ? 'text-accent' : 'text-text-muted')} />
             </div>
             <div className="text-center">
-              <p className="text-sm text-slate-200 font-medium">
+              <p className="text-sm text-text-primary font-medium">
                 Arraste seu currículo aqui ou{' '}
-                <span className="text-indigo-400 underline underline-offset-2">
+                <span className="text-accent underline underline-offset-2">
                   clique para selecionar
                 </span>
               </p>
@@ -222,7 +222,7 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
       {/* Accessible format description */}
       <p
         id={FORMATS_DESCRIPTION_ID}
-        className="mt-2 text-xs text-slate-500 text-center"
+        className="mt-2 text-xs text-text-muted/60 text-center"
       >
         Formatos aceitos: .pdf, .docx — Tamanho máximo: 5MB
       </p>

@@ -55,7 +55,7 @@ export function PricingCtaButton({ label, isPopular }: PricingCtaButtonProps) {
   return (
     <>
       <Button
-        variant={isPopular ? "primary" : "outline"}
+        variant={isPopular ? 'primary' : 'outline'}
         size="lg"
         className="w-full"
         onClick={() => setIsOpen(true)}
@@ -70,23 +70,23 @@ export function PricingCtaButton({ label, isPopular }: PricingCtaButtonProps) {
         description="Os planos apresentados são fictícios e fazem parte de um projeto de estudo."
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-300 leading-relaxed">
-            O <strong className="text-white">TalentMetrics</strong> é um{" "}
-            <strong className="text-indigo-400">
+          <p className="text-sm text-text-muted leading-relaxed">
+            O <strong className="text-text-primary">TalentMetrics</strong> é um{' '}
+            <strong className="text-accent">
               projeto demonstrativo para fins de estudo
             </strong>
             . Os planos de preço exibidos são ficcionais e não geram cobranças
             reais.
           </p>
 
-          <p className="text-sm text-slate-400 leading-relaxed">
+          <p className="text-sm text-text-muted leading-relaxed">
             Para testar a funcionalidade de análise de currículos com IA, acesse
-            o <strong className="text-indigo-300">Playground</strong> clicando
+            o <strong className="text-accent">Playground</strong> clicando
             em &quot;Testar Agora&quot; na página principal.
           </p>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+          <div className="rounded-xl border border-border-subtle bg-canvas/60 p-4 space-y-3">
+            <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">
               Conheça o desenvolvedor
             </p>
             <div className="flex flex-col gap-2">
@@ -94,21 +94,21 @@ export function PricingCtaButton({ label, isPopular }: PricingCtaButtonProps) {
                 href="https://github.com/soudevictor"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors group"
+                className="flex items-center gap-2 text-sm text-text-muted hover:text-text-primary transition-colors group"
               >
-                <GithubIcon className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
+                <GithubIcon className="w-4 h-4 text-text-muted group-hover:text-text-primary transition-colors" />
                 <span>GitHub</span>
-                <ExternalLink className="w-3 h-3 text-slate-500 ml-auto" />
+                <ExternalLink className="w-3 h-3 text-text-muted/50 ml-auto" />
               </a>
               <a
                 href="https://www.linkedin.com/in/soudevictor/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors group"
+                className="flex items-center gap-2 text-sm text-text-muted hover:text-text-primary transition-colors group"
               >
-                <LinkedinIcon className="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition-colors" />
+                <LinkedinIcon className="w-4 h-4 text-text-muted group-hover:text-blue-400 transition-colors" />
                 <span>LinkedIn</span>
-                <ExternalLink className="w-3 h-3 text-slate-500 ml-auto" />
+                <ExternalLink className="w-3 h-3 text-text-muted/50 ml-auto" />
               </a>
             </div>
           </div>

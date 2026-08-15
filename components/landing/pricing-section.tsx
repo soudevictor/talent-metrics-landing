@@ -14,13 +14,13 @@ export function PricingSection() {
         <Badge variant="purple" className="mb-4">
           Planos e Preços
         </Badge>
-        <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h2 className="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight">
           Investimento claro para{' '}
           <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             escalar seu time
           </span>
         </h2>
-        <p className="mt-4 text-slate-400 text-base sm:text-lg max-w-2xl mx-auto">
+        <p className="mt-4 text-text-muted text-base sm:text-lg max-w-2xl mx-auto">
           Escolha o plano ideal para a sua volumetria de vagas. Sem taxas escondidas.
         </p>
       </div>
@@ -31,13 +31,13 @@ export function PricingSection() {
             key={plan.id}
             className={`relative flex flex-col justify-between ${
               plan.isPopular
-                ? 'border-indigo-500/50 bg-slate-900/80 shadow-2xl shadow-indigo-500/10'
-                : 'border-slate-800'
+                ? 'border-accent/50 bg-surface shadow-2xl shadow-accent/10'
+                : 'border-border-subtle'
             }`}
           >
             {plan.isPopular ? (
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <Badge variant="indigo" className="bg-indigo-600 text-white font-semibold border-none">
+                <Badge variant="accent" className="font-semibold">
                   Mais Popular
                 </Badge>
               </div>
@@ -48,19 +48,19 @@ export function PricingSection() {
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
                 <CardDescription className="text-xs">{plan.description}</CardDescription>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-extrabold text-white tracking-tight">{plan.price}</span>
-                  <span className="text-slate-400 text-sm">{plan.period}</span>
+                  <span className="text-4xl font-extrabold text-text-primary tracking-tight">{plan.price}</span>
+                  <span className="text-text-muted text-sm">{plan.period}</span>
                 </div>
               </CardHeader>
 
               <CardContent className="space-y-3 mt-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted">
                   O que está incluído:
                 </p>
                 <ul className="space-y-2.5">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
-                      <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <li key={feature} className="flex items-start gap-2 text-xs sm:text-sm text-text-primary">
+                      <Check className="w-4 h-4 text-accent shrink-0 mt-0.5" />
                       <span>{feature}</span>
                     </li>
                   ))}

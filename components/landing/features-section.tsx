@@ -30,16 +30,16 @@ export function FeaturesSection() {
   return (
     <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full scroll-mt-24">
       <div className="text-center mb-16">
-        <Badge variant="indigo" className="mb-4">
+        <Badge variant="accent" className="mb-4">
           Recursos Principais
         </Badge>
-        <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h2 className="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight">
           Tudo o que sua equipe precisa para{' '}
-          <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-accent via-teal-400 to-cyan-400 bg-clip-text text-transparent">
             contratar melhor
           </span>
         </h2>
-        <p className="mt-4 text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto">
+        <p className="mt-4 text-text-muted text-base sm:text-lg max-w-2xl mx-auto">
           Elimine tarefas repetitivas de triagem e dedique seu tempo ao que realmente importa: conectar pessoas.
         </p>
       </div>
@@ -51,11 +51,11 @@ export function FeaturesSection() {
           return (
             <Card
               key={feature.id}
-              className="group hover:border-zinc-700/80 hover:bg-zinc-900/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30"
+              className="group hover:border-border-hover hover:bg-surface transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30"
             >
               <CardHeader>
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:bg-indigo-500/15 transition-colors">
-                  {Icon ? <Icon className="w-5 h-5 text-indigo-400" aria-hidden="true" /> : null}
+                <div className="w-10 h-10 rounded-xl bg-accent-glow border border-accent/20 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
+                  {Icon ? <Icon className="w-5 h-5 text-accent" aria-hidden="true" /> : null}
                 </div>
                 <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
                 <CardDescription className="text-sm leading-relaxed">{feature.description}</CardDescription>
@@ -66,15 +66,15 @@ export function FeaturesSection() {
       </div>
 
       {/* ATS Integrations sub-section */}
-      <div className="mt-20 rounded-2xl border border-zinc-800/80 bg-zinc-900/40 backdrop-blur-sm p-8 sm:p-10">
+      <div className="mt-20 rounded-2xl border border-border-subtle bg-surface backdrop-blur-sm p-8 sm:p-10">
         <div className="text-center mb-8">
-          <Badge variant="emerald" className="mb-3">
+          <Badge variant="accent" className="mb-3">
             Integrações ATS
           </Badge>
-          <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h3 className="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">
             Compatível com seu stack de RH
           </h3>
-          <p className="mt-3 text-zinc-400 text-sm max-w-xl mx-auto">
+          <p className="mt-3 text-text-muted text-sm max-w-xl mx-auto">
             Exporte candidatos pré-qualificados diretamente para os principais sistemas de rastreamento do mercado — sem atrito, sem retrabalho.
           </p>
         </div>
@@ -87,14 +87,14 @@ export function FeaturesSection() {
             >
               <div className={`w-2.5 h-2.5 rounded-full bg-current ${ats.text} opacity-70`} />
               <span className={`text-sm font-semibold ${ats.text}`}>{ats.name}</span>
-              <span className="text-xs text-zinc-500 border border-zinc-700/50 px-1.5 py-0.5 rounded font-mono">
+              <span className="text-xs text-text-muted border border-border-subtle px-1.5 py-0.5 rounded font-mono">
                 API
               </span>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs text-zinc-600 mt-6">
+        <p className="text-center text-xs text-text-muted/60 mt-6">
           Mais integrações disponíveis via webhook e API REST.
         </p>
       </div>

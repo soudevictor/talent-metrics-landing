@@ -10,13 +10,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, children, variant = 'primary', size = 'md', isLoading = false, disabled, ...props }, ref) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 disabled:opacity-50 disabled:pointer-events-none cursor-pointer';
+      'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent disabled:opacity-50 disabled:pointer-events-none cursor-pointer';
 
     const variants = {
-      primary: 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-sm',
-      secondary: 'bg-slate-800 text-slate-100 hover:bg-slate-700 active:bg-slate-900 border border-slate-700 shadow-sm',
-      outline: 'border border-slate-700 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-transparent hover:bg-slate-300 dark:hover:bg-slate-800',
-      ghost: 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 bg-transparent',
+      primary: 'bg-accent text-canvas hover:bg-accent/90 active:bg-accent/80 shadow-sm',
+      secondary: 'bg-surface-elevated text-text-primary hover:bg-surface-elevated/80 border border-border-subtle shadow-sm',
+      outline: 'border border-border-subtle text-text-primary bg-transparent hover:bg-surface-elevated hover:border-border-hover',
+      ghost: 'text-text-muted hover:text-text-primary hover:bg-surface bg-transparent',
     };
 
     const sizes = {
