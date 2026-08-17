@@ -27,12 +27,26 @@
   }
 }
 
-/* ─── Grid Background Pattern ───────────────────────────────────────────── */
+/* ─── Grid Background Pattern (legacy) ──────────────────────────────────── */
 .bg-grid-pattern {
   background-image:
     linear-gradient(to right, rgb(39 39 42 / 0.35) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(39 39 42 / 0.35) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+/* ─── Grid Background — Masked (bespoke, anti-AI-cliché) ─────────────────── */
+.bg-grid-masked {
+  background-image:
+    linear-gradient(to right, rgb(39 39 42 / 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(39 39 42 / 0.25) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, black 40%, transparent 100%);
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 }
 
 /* ─── Marquee (continuous scroll) ────────────────────────────────────────── */

@@ -39,3 +39,15 @@ export interface SampleResume {
   description: string;
   content: string;
 }
+
+export interface CandidateHistoryItem {
+  id: string;
+  candidateName: string;
+  jobTitle: string;
+  score: number;
+  analyzedAt: string;
+  summary: string;
+  matchingPoints: string[];
+  improvementPoints: string[];
+  matchPercentageByRole?: Record<string, number>;
+}

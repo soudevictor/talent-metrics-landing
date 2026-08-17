@@ -11,6 +11,7 @@ export function DemoBanner() {
   useEffect(() => {
     const isDismissed = localStorage.getItem(STORAGE_KEY);
     if (!isDismissed) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsVisible(true);
     }
   }, []);

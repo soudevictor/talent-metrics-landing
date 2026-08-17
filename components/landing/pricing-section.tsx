@@ -11,12 +11,12 @@ export function PricingSection() {
   return (
     <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full scroll-mt-24">
       <div className="text-center mb-16">
-        <Badge variant="purple" className="mb-4">
+        <Badge variant="accent" className="mb-4">
           Planos e Preços
         </Badge>
         <h2 className="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight">
           Investimento claro para{' '}
-          <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-accent via-teal-400 to-cyan-400 bg-clip-text text-transparent">
             escalar seu time
           </span>
         </h2>

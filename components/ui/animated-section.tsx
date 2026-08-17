@@ -29,6 +29,7 @@ export function AnimatedSection({ children, className, delay = 0 }: AnimatedSect
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
