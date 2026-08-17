@@ -36,11 +36,11 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="w-full rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-6 backdrop-blur-xl space-y-6"
+      className="w-full rounded-2xl border border-border-subtle bg-surface p-5 sm:p-6 backdrop-blur-xl space-y-6"
     >
       {isStreaming ? (
-        <div className="flex items-center gap-2 text-xs text-indigo-300 font-medium pb-2 border-b border-slate-800">
-          <span className="inline-block h-2 w-2 rounded-full bg-indigo-400 animate-pulse" />
+        <div className="flex items-center gap-2 text-xs text-accent font-medium pb-2 border-b border-border-subtle">
+          <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" />
           Análise em andamento...
         </div>
       ) : null}
@@ -60,7 +60,7 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
               fill="none"
               stroke="currentColor"
               strokeWidth="6"
-              className="text-slate-800"
+              className="text-surface-elevated"
             />
             <circle
               cx="40"
@@ -80,11 +80,11 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
         </div>
 
         <div>
-          <p className="text-sm text-slate-400">Score de Compatibilidade</p>
+          <p className="text-sm text-text-muted">Score de Compatibilidade</p>
           <p className={cn('text-lg font-semibold', getScoreColor(score))}>
             {getScoreLabel(score)}
           </p>
-          <div className="w-full max-w-[200px] bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div className="w-full max-w-[200px] bg-surface-elevated h-1.5 rounded-full mt-2 overflow-hidden">
             <div
               className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-700', getScoreGradient(score))}
               style={{ width: `${score}%` }}
@@ -95,23 +95,23 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
 
       {/* Summary */}
       <div>
-        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+        <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">
           Resumo Executivo
         </h3>
-        <p className="text-sm text-slate-200 leading-relaxed">{summary}</p>
+        <p className="text-sm text-text-primary leading-relaxed">{summary}</p>
       </div>
 
       {/* Points Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Matching Points */}
-        <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800/50">
+        <div className="p-4 rounded-xl bg-canvas/40 border border-border-subtle">
           <h3 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5" />
             Pontos Fortes
           </h3>
           <ul className="space-y-2">
             {matchingPoints.map((point, index) => (
-              <li key={index} className="flex items-start gap-2 text-xs text-slate-300">
+              <li key={index} className="flex items-start gap-2 text-xs text-text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
                 {point}
               </li>
@@ -120,14 +120,14 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
         </div>
 
         {/* Improvement Points */}
-        <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800/50">
+        <div className="p-4 rounded-xl bg-canvas/40 border border-border-subtle">
           <h3 className="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5" />
             Pontos de Melhoria
           </h3>
           <ul className="space-y-2">
             {improvementPoints.map((point, index) => (
-              <li key={index} className="flex items-start gap-2 text-xs text-slate-300">
+              <li key={index} className="flex items-start gap-2 text-xs text-text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
                 {point}
               </li>

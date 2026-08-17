@@ -42,6 +42,7 @@ describe('ResumeAnalysisSchema', () => {
   });
 
   it('should reject missing summary', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { summary, ...payload } = validPayload;
     const result = ResumeAnalysisSchema.safeParse(payload);
     expect(result.success).toBe(false);
@@ -75,6 +76,7 @@ describe('ResumeAnalysisSchema', () => {
   });
 
   it('should set default empty arrays when matchingPoints and improvementPoints are omitted', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { matchingPoints, improvementPoints, ...payload } = validPayload;
     const result = ResumeAnalysisSchema.safeParse(payload);
     expect(result.success).toBe(true);

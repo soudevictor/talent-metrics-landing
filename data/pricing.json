@@ -1,0 +1,51 @@
+[
+  {
+    "id": "starter",
+    "name": "Starter",
+    "price": "R$ 299,99",
+    "period": "/mês",
+    "description": "Ideal para pequenas empresas e startups com contratações pontuais.",
+    "features": [
+      "Até 200 currículos/mês",
+      "Análise com Gemini AI",
+      "Scoring de fit básico",
+      "Exportação em CSV",
+      "Suporte via e-mail"
+    ],
+    "ctaText": "Começar Teste Grátis",
+    "isPopular": false
+  },
+  {
+    "id": "professional",
+    "name": "Professional",
+    "price": "R$ 799,99",
+    "period": "/mês",
+    "description": "Para times de RH em crescimento com volume constante de vagas.",
+    "features": [
+      "Até 1.500 currículos/mês",
+      "Análise com Gemini 2.0 Flash",
+      "Scoring de fit + Perguntas de Entrevista",
+      "Anonimização de dados para vagas cegas",
+      "Integração ATS (Greenhouse, Gupy)",
+      "Suporte prioritário"
+    ],
+    "ctaText": "Testar Plano Pro",
+    "isPopular": true
+  },
+  {
+    "id": "enterprise",
+    "name": "Enterprise",
+    "price": "Personalizado",
+    "period": "",
+    "description": "Para grandes corporações que exigem volumetria ilimitada e SLA garantido.",
+    "features": [
+      "Currículos ilimitados",
+      "Modelo de IA customizado por cultura",
+      "SLA de 99.9% de disponibilidade",
+      "SSO (SAML/Okta) + Auditoria",
+      "Gerente de conta dedicado"
+    ],
+    "ctaText": "Falar com Consultor",
+    "isPopular": false
+  }
+]

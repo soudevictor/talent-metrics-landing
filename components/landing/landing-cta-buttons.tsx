@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/ui/modal';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { Modal, DemoModalContent } from '@/components/ui/modal';
+import { ArrowRight } from 'lucide-react';
 
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -25,23 +25,61 @@ function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function LinkedinIcon(props: React.SVGProps<SVGSVGElement>) {
+interface LoginModalContentProps {
+  onClose: () => void;
+}
+
+function LoginModalContent({ onClose }: LoginModalContentProps) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      width="24"
-      height="24"
-      stroke="currentColor"
-      strokeWidth="2"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect width="4" height="12" x="2" y="9" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
+    <div className="space-y-4">
+      <p className="text-sm text-text-muted leading-relaxed">
+        O <strong className="text-text-primary">TalentMetrics</strong> é um{' '}
+        <strong className="text-accent">
+          projeto demonstrativo para fins de estudo
+        </strong>
+        . Esta plataforma SaaS fictícia foi criada para demonstrar habilidades
+        de engenharia front-end, integração com IA (Groq/Llama) e design de
+        interfaces B2B modernas.
+      </p>
+
+      <div className="rounded-xl border border-border-subtle bg-canvas/60 p-4 space-y-3">
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">
+          Conheça o desenvolvedor
+        </p>
+        <div className="flex flex-col gap-2">
+          <a
+            href="https://github.com/soudevictor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 text-sm text-text-muted hover:text-text-primary transition-colors group rounded-lg p-2 hover:bg-surface"
+          >
+            <GithubIcon className="w-4 h-4 text-text-muted group-hover:text-text-primary transition-colors" />
+            <span>GitHub — soudevictor</span>
+            <svg className="w-3 h-3 text-text-muted/50 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/soudevictor/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 text-sm text-text-muted hover:text-text-primary transition-colors group rounded-lg p-2 hover:bg-surface"
+          >
+            <svg className="w-4 h-4 text-text-muted group-hover:text-blue-400 transition-colors" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+              <rect width="4" height="12" x="2" y="9" />
+              <circle cx="4" cy="4" r="2" />
+            </svg>
+            <span>LinkedIn — soudevictor</span>
+            <svg className="w-3 h-3 text-text-muted/50 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /></svg>
+          </a>
+        </div>
+      </div>
+
+      <div className="flex justify-end pt-2">
+        <Button variant="primary" size="sm" onClick={onClose}>
+          Entendido
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -58,17 +96,19 @@ export function NavCtaButtons() {
         Entrar
       </Button>
       <Link href="/playground">
-        <Button variant="primary" size="sm">
+        <Button variant="primary" size="sm" className="shadow-lg shadow-accent/20">
           Testar Agora
         </Button>
       </Link>
 
-      <FictitiousModal
+      <Modal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}
         title="Área de Login"
         description="Esta é uma funcionalidade fictícia do projeto demonstrativo."
-      />
+      >
+        <LoginModalContent onClose={() => setIsLoginOpen(false)} />
+      </Modal>
     </>
   );
 }
@@ -82,7 +122,7 @@ export function HeroCtaButtons() {
         <Button
           variant="primary"
           size="lg"
-          className="w-full py-8 gap-2 text-base shadow-lg shadow-indigo-600/25"
+          className="w-full py-8 gap-2 text-base shadow-lg shadow-accent/25"
         >
           Experimentar Playground IA
           <ArrowRight className="w-5 h-5" />
@@ -97,76 +137,13 @@ export function HeroCtaButtons() {
         Agendar Demonstração
       </Button>
 
-      <FictitiousModal
+      <Modal
         isOpen={isDemoOpen}
         onClose={() => setIsDemoOpen(false)}
         title="Agendar Demonstração"
-        description="Esta é uma funcionalidade fictícia do projeto demonstrativo."
-      />
+      >
+        <DemoModalContent onClose={() => setIsDemoOpen(false)} />
+      </Modal>
     </div>
-  );
-}
-
-interface FictitiousModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  description: string;
-}
-
-function FictitiousModal({ isOpen, onClose, title, description }: FictitiousModalProps) {
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={title}
-      description={description}
-    >
-      <div className="space-y-4">
-        <p className="text-sm text-slate-300 leading-relaxed">
-          O <strong className="text-white">TalentMetrics</strong> é um{" "}
-          <strong className="text-indigo-400">
-            projeto demonstrativo para fins de estudo
-          </strong>
-          . Esta plataforma SaaS fictícia foi criada para demonstrar habilidades
-          de engenharia front-end, integração com IA (Gemini) e design de
-          interfaces modernas.
-        </p>
-
-        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 space-y-3">
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            Conheça o desenvolvedor
-          </p>
-          <div className="flex flex-col gap-2">
-            <a
-              href="https://github.com/soudevictor"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors group"
-            >
-              <GithubIcon className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-              <span>GitHub</span>
-              <ExternalLink className="w-3 h-3 text-slate-500 ml-auto" />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/soudevictor/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors group"
-            >
-              <LinkedinIcon className="w-4 h-4 text-slate-400 group-hover:text-indigo-400 transition-colors" />
-              <span>LinkedIn</span>
-              <ExternalLink className="w-3 h-3 text-slate-500 ml-auto" />
-            </a>
-          </div>
-        </div>
-
-        <div className="flex justify-end pt-2">
-          <Button variant="primary" size="sm" onClick={onClose}>
-            Entendido
-          </Button>
-        </div>
-      </div>
-    </Modal>
   );
 }

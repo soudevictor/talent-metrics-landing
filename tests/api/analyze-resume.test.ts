@@ -11,7 +11,7 @@ vi.mock("@ai-sdk/groq", () => ({
 }));
 
 function createMockRequest(options: {
-  payload?: any;
+  payload?: unknown;
   payloadError?: boolean;
 }): Request {
   const { payload = null, payloadError = false } = options;
