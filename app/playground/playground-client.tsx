@@ -50,7 +50,7 @@ export function PlaygroundClient() {
               <span className="animate-status-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
             </span>
-            <span>Demo Gratuita · Llama 3.3 Engine</span>
+            <span>Groq LPU Engine · Operational</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight">
             Teste a Análise com IA

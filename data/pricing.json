@@ -7,7 +7,7 @@
     "description": "Ideal para pequenas empresas e startups com contratações pontuais.",
     "features": [
       "Até 200 currículos/mês",
-      "Análise com Gemini AI",
+      "Análise via Groq LPU Engine",
       "Scoring de fit básico",
       "Exportação em CSV",
       "Suporte via e-mail"
@@ -23,7 +23,7 @@
     "description": "Para times de RH em crescimento com volume constante de vagas.",
     "features": [
       "Até 1.500 currículos/mês",
-      "Análise com Gemini 2.0 Flash",
+      "Análise com IA em Tempo Real (LPU Ultra-Fast)",
       "Scoring de fit + Perguntas de Entrevista",
       "Anonimização de dados para vagas cegas",
       "Integração ATS (Greenhouse, Gupy)",

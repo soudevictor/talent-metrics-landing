@@ -46,22 +46,48 @@ Requisitos obrigatórios:
       .filter(Boolean)
       .join("\n\n");
 
-    const { object } = await generateObject({
-      model: groq("llama-3.3-70b-versatile"),
-      providerOptions: {
-        groq: {
-          structuredOutputs: false,
-        },
-      },
-      schema: ResumeAnalysisSchema,
-      system: systemPrompt,
-      messages: [
-        {
-          role: "user",
-          content: userPromptText,
-        },
-      ],
-    });
+    const CANDIDATE_MODELS = [
+      process.env.GROQ_MODEL_ID || 'qwen/qwen3.6-27b',
+      'gemma2-9b-it',
+      'openai/gpt-oss-120b',
+    ];
+    
+    let object = null;
+    let lastError: Error | null = null;
+    let successfulModel = "";
+
+    for (const modelId of CANDIDATE_MODELS) {
+      try {
+        const result = await generateObject({
+          model: groq(modelId),
+          providerOptions: {
+            groq: {
+              structuredOutputs: false,
+            },
+          },
+          schema: ResumeAnalysisSchema,
+          system: systemPrompt,
+          messages: [
+            {
+              role: "user",
+              content: userPromptText,
+            },
+          ],
+        });
+        object = result.object;
+        successfulModel = modelId;
+        break;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+      }
+    }
+
+    if (!object) {
+      return NextResponse.json(
+        { error: lastError?.message || "Todos os modelos falharam." },
+        { status: 500 },
+      );
+    }
 
     const validation = ResumeAnalysisSchema.safeParse(object);
     if (!validation.success) {
@@ -72,7 +98,7 @@ Requisitos obrigatórios:
     }
 
     return NextResponse.json(
-      { ...validation.data, source: "groq-ai" },
+      { ...validation.data, source: successfulModel },
       { status: 200 },
     );
   } catch (error) {
