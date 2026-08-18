@@ -3,7 +3,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=for-the-badge&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Groq AI](https://img.shields.io/badge/Groq_AI-Llama_3.3_70B-orange?style=for-the-badge)
+![Groq AI](https://img.shields.io/badge/Groq_AI-Llama_3.1_Instant-orange?style=for-the-badge)
 ![Vitest](https://img.shields.io/badge/Vitest-Passing-6E9F18?style=for-the-badge&logo=vitest)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
@@ -20,7 +20,7 @@ Plataforma B2B SaaS de triagem e inteligência de recrutamento voltada para time
 | **Core Framework** | Next.js (App Router) | Renderização SSG/ISR para a Landing Page e CSR reativo para a ferramenta. |
 | **Linguagem** | TypeScript (Strict) | Tipagem estrita com zero uso de `any` para confiabilidade do código. |
 | **Estilização** | Tailwind CSS + `clsx` | Design system responsivo com animações leves via Framer Motion. |
-| **IA & Backend** | Vercel AI SDK + Groq API | Processamento de linguagem natural com o modelo `llama-3.3-70b-versatile`. |
+| **IA & Backend** | Vercel AI SDK + Groq API | Processamento de linguagem natural com o modelo `Llama 3.1 Instant (Groq LPU)`. |
 | **Parsing PDF** | `pdfjs-dist` (Client-Side) | Extração de texto no navegador do usuário, garantindo payload leve (JSON). |
 | **Validação** | Zod | Schemas estritos para garantia do formato de resposta estruturada da IA. |
 | **Testes** | Vitest + React Testing Library | Cobertura unitária e de integração de componentes e schemas Zod. |

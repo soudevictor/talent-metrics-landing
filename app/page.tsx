@@ -168,7 +168,7 @@ function ProductMockup() {
             <span className="animate-status-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
           </span>
-          Llama 3.3 · Online
+          Groq LPU Engine · Operational
         </span>
       </div>
 
@@ -429,7 +429,7 @@ export default function Home() {
               <span className="animate-status-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent" />
             </span>
-            <span>Llama 3.3 Engine&nbsp;·&nbsp;Operational</span>
+            <span>Groq LPU Engine&nbsp;·&nbsp;Operational</span>
           </div>
         </AnimatedSection>
 

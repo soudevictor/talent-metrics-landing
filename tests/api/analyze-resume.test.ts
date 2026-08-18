@@ -86,6 +86,6 @@ describe("POST /api/analyze-resume", () => {
 
     expect(response.status).toBe(200);
     expect(data.score).toBe(95);
-    expect(data.source).toBe("groq-ai");
+    expect(data.source).toBe("qwen/qwen3.6-27b");
   });
 });
