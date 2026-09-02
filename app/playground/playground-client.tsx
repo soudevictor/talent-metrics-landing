@@ -56,7 +56,7 @@ export function PlaygroundClient() {
             Teste a Análise com IA
           </h1>
           <p className="text-text-muted text-sm sm:text-base max-w-lg mx-auto">
-            Envie um currículo em PDF ou DOCX e veja em tempo real como nossa IA
+            Envie um currículo em PDF e veja em tempo real como nossa IA
             avalia o perfil do candidato.
           </p>
         </div>
@@ -94,6 +94,9 @@ export function PlaygroundClient() {
         {/* Playground Section (Dropzone + Results) */}
         <div className="w-full max-w-xl mx-auto">
           <PlaygroundSection jobTitle={jobTitle} />
+          <p className="text-center text-xs text-text-muted/60 mt-3">
+            💡 <span className="font-medium text-text-muted/80">Dica:</span> Envie o currículo do criador da plataforma para desbloquear o Modo Desenvolvedor.
+          </p>
         </div>
       </div>
 

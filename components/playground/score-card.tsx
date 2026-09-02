@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import type { ResumeAnalysis } from '@/lib/schemas/resume-schema';
 
 interface ScoreCardProps {
-  data: ResumeAnalysis;
+  data: ResumeAnalysis & { isEasterEgg?: boolean };
   isStreaming?: boolean;
 }
 
@@ -30,14 +30,25 @@ function getScoreLabel(score: number): string {
 }
 
 export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
-  const { score, summary, matchingPoints, improvementPoints } = data;
+  const { score, summary, matchingPoints, improvementPoints, isEasterEgg } = data as ResumeAnalysis & { isEasterEgg?: boolean };
 
   return (
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="w-full rounded-2xl border border-border-subtle bg-surface p-5 sm:p-6 backdrop-blur-xl space-y-6"
+      className={`w-full rounded-2xl border bg-surface p-5 sm:p-6 backdrop-blur-xl space-y-6 transition-all duration-500 ${
+        isEasterEgg
+          ? 'border-yellow-400/60 shadow-lg shadow-yellow-400/20'
+          : 'border-border-subtle'
+      }`}
     >
+      {isEasterEgg ? (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-yellow-500/15 via-emerald-500/10 to-yellow-500/15 border border-yellow-400/40 text-yellow-300 text-xs font-semibold mb-1">
+          <span aria-hidden="true">&#x1F451;</span>
+          <span>Creator Mode Ativado &middot; Candidato Recomendado</span>
+        </div>
+      ) : null}
+
       {isStreaming ? (
         <div className="flex items-center gap-2 text-xs text-accent font-medium pb-2 border-b border-border-subtle">
           <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" />

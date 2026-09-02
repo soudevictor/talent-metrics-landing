@@ -17,7 +17,7 @@ describe('Dropzone', () => {
     expect(dropzone).toHaveAttribute('role', 'button');
     expect(dropzone).toHaveAttribute('tabindex', '0');
 
-    const description = screen.getByText(/Formatos aceitos: .pdf, .docx/i);
+    const description = screen.getByText(/Formato aceito: apenas \.pdf/i);
     expect(description).toBeInTheDocument();
   });
 
@@ -33,7 +33,7 @@ describe('Dropzone', () => {
     expect(handleFileSelect).toHaveBeenCalledWith(file);
   });
 
-  it('should accept a valid .docx file', () => {
+  it('should reject a .docx file and show error', () => {
     const handleFileSelect = vi.fn();
     render(<Dropzone onFileSelect={handleFileSelect} />);
 
@@ -46,7 +46,9 @@ describe('Dropzone', () => {
 
     fireEvent.change(input, { target: { files: [file] } });
 
-    expect(handleFileSelect).toHaveBeenCalledWith(file);
+    expect(handleFileSelect).not.toHaveBeenCalled();
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent(/não suportado/i);
   });
 
   it('should reject a .png file and show error', () => {
