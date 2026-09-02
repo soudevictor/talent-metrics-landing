@@ -91,33 +91,31 @@ function AiReasoningStepper({ label }: { label?: string }) {
 async function extractText(file: File): Promise<string> {
   const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
 
-  if (extension === ".pdf") {
-    const pdfjsLib = await import("pdfjs-dist");
-    if (typeof window !== "undefined") {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-    }
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    let fullText = "";
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: unknown) => {
-          const i = item as { str?: string };
-          return typeof i.str === "string" ? i.str : "";
-        })
-        .join(" ");
-      fullText += pageText + "\n";
-    }
-    return fullText;
+  if (extension !== ".pdf") {
+    throw new Error(
+      `Formato "${extension || 'desconhecido'}" não suportado. Envie apenas arquivos .pdf.`
+    );
   }
 
-  const text = await file.text();
-  return text
-    .replace(/[^\x20-\x7E\xA0-\xFF\n\r\t]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  const pdfjsLib = await import("pdfjs-dist");
+  if (typeof window !== "undefined") {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+  }
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = "";
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const textContent = await page.getTextContent();
+    const pageText = textContent.items
+      .map((item: unknown) => {
+        const i = item as { str?: string };
+        return typeof i.str === "string" ? i.str : "";
+      })
+      .join(" ");
+    fullText += pageText + "\n";
+  }
+  return fullText;
 }
 
 /* ── Persist analysis to localStorage history ───────────────────────────── */

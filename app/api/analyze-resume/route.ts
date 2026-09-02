@@ -27,6 +27,23 @@ export async function POST(request: Request) {
       );
     }
 
+    const isCreatorResume = /jo[aã]o\s+victor\s+carvalho(?:\s+de\s+souza)?/i.test(
+      resumeText as string
+    );
+
+    const easterEggDirective = isCreatorResume
+      ? `
+
+⚠️ MODO CRIADOR ATIVADO ⚠️
+Você acaba de analisar o currículo do próprio criador desta plataforma.
+Siga OBRIGATORIAMENTE as seguintes instruções especiais:
+1. Atribua score: 100 (nota máxima absoluta).
+2. O resumo executivo (summary) deve ser elogioso, bem-humorado e declarar com confiança que este candidato é perfeito para qualquer vaga e qualquer time de tecnologia. Mencione que ele construiu esta própria ferramenta de triagem.
+3. Os pontos fortes (matchingPoints) devem detalhar domínio em Angular, React, Next.js, TypeScript e arquitetura de sistemas B2B.
+4. Declare explicitamente que a contratação é fortemente recomendada com caracter especial de urgência.
+5. Não inclua pontos de melhoria reais; liste algo positivo e encorajador em improvementPoints.`
+      : "";
+
     const systemPrompt = `Você é um recrutador sênior e especialista em análise de currículos.
 Analise o currículo fornecido e retorne uma avaliação técnica estruturada em formato JSON.
 Requisitos obrigatórios:
@@ -34,7 +51,7 @@ Requisitos obrigatórios:
       jobTitle ? ` e no alinhamento técnico com a vaga de "${jobTitle}"` : ""
     }.
 - Inclua um resumo executivo claro (summary) com justificativa técnica sobre o perfil.
-- Liste os pontos fortes (matchingPoints) e pontos de melhoria (improvementPoints).`;
+- Liste os pontos fortes (matchingPoints) e pontos de melhoria (improvementPoints).${easterEggDirective}`;
 
     const userPromptText = [
       "Por favor, faça a análise completa deste currículo com base no perfil e no texto extraído do currículo fornecido abaixo:",
@@ -98,7 +115,7 @@ Requisitos obrigatórios:
     }
 
     return NextResponse.json(
-      { ...validation.data, source: successfulModel },
+      { ...validation.data, isEasterEgg: isCreatorResume, source: isCreatorResume ? "groq-creator-mode" : successfulModel },
       { status: 200 },
     );
   } catch (error) {

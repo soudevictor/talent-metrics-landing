@@ -4,11 +4,8 @@ import { useState, useRef, useCallback, type DragEvent, type KeyboardEvent } fro
 import { Upload, FileText, AlertCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const ACCEPTED_EXTENSIONS = ['.pdf', '.docx'];
-const ACCEPTED_MIME_TYPES = [
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-];
+const ACCEPTED_EXTENSIONS = ['.pdf'];
+const ACCEPTED_MIME_TYPES = ['application/pdf'];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const FORMATS_DESCRIPTION_ID = 'dropzone-formats-description';
 
@@ -29,7 +26,7 @@ function validateFile(file: File): { valid: boolean; error?: string } {
   if (!ACCEPTED_EXTENSIONS.includes(extension)) {
     return {
       valid: false,
-      error: `Formato "${extension || 'desconhecido'}" não suportado. Aceitamos apenas .pdf e .docx.`,
+      error: `Formato "${extension || 'desconhecido'}" não suportado. Aceitamos apenas .pdf.`,
     };
   }
 
@@ -224,7 +221,7 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
         id={FORMATS_DESCRIPTION_ID}
         className="mt-2 text-xs text-text-muted/60 text-center"
       >
-        Formatos aceitos: .pdf, .docx — Tamanho máximo: 5MB
+        Formato aceito: apenas .pdf — Tamanho máximo: 5MB
       </p>
     </div>
   );
