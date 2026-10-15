@@ -1,6 +1,7 @@
 "use client";
 
 import { PlaygroundSection } from "@/components/playground/playground-section";
+import { HeroVideoBackground } from "@/components/landing/hero-video-background";
 import { ArrowLeft, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,12 +14,8 @@ export function PlaygroundClient() {
 
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Masked grid background layer */}
-      <div className="bg-grid-masked" aria-hidden="true" />
-
-      {/* Background radial glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.10)_0%,transparent_70%)] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-teal-500/4 blur-3xl -z-10 pointer-events-none" />
+      {/* Background de vídeo com fallback para imagem, sem máscara de grid sobrepondo texto */}
+      <HeroVideoBackground />
 
       {/* Header */}
       <header className="w-full border-b border-border-subtle bg-canvas/60 backdrop-blur-md sticky top-0 z-40">
@@ -42,7 +39,7 @@ export function PlaygroundClient() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-10">
+      <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-10">
         {/* Page Heading */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-glow border border-accent/25 text-accent text-xs sm:text-sm font-medium">
@@ -98,7 +95,7 @@ export function PlaygroundClient() {
             💡 <span className="font-medium text-text-muted/80">Dica:</span> Envie o currículo do criador da plataforma para desbloquear o Modo Desenvolvedor.
           </p>
         </div>
-      </div>
+      </main>
 
       {/* Footer */}
       <footer className="w-full border-t border-border-subtle py-6 px-4 text-center text-xs text-text-muted/60">

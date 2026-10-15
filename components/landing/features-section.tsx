@@ -17,13 +17,13 @@ const ICON_MAP: Record<string, IconComponent> = {
 
 const features = featuresData as Feature[];
 
-/* ── ATS Integration logos ──────────────────────────────────────────────── */
+/* ── ATS Integration logos (Fictícios) ─────────────────────────────────── */
 const ATS_INTEGRATIONS = [
-  { name: 'Workday',     color: 'from-blue-500/20 to-blue-600/10',   text: 'text-blue-300',    border: 'border-blue-500/20'   },
-  { name: 'Greenhouse',  color: 'from-green-500/20 to-green-600/10', text: 'text-green-300',   border: 'border-green-500/20'  },
-  { name: 'Lever',       color: 'from-violet-500/20 to-violet-600/10', text: 'text-violet-300', border: 'border-violet-500/20' },
-  { name: 'BambooHR',    color: 'from-emerald-500/20 to-emerald-600/10', text: 'text-emerald-300', border: 'border-emerald-500/20' },
-  { name: 'Gupy',        color: 'from-orange-500/20 to-orange-600/10', text: 'text-orange-300', border: 'border-orange-500/20' },
+  { name: 'OpenATS',     color: 'from-blue-500/20 to-blue-600/10',   text: 'text-blue-300',    border: 'border-blue-500/20'   },
+  { name: 'TalentFlow',  color: 'from-green-500/20 to-green-600/10', text: 'text-green-300',   border: 'border-green-500/20'  },
+  { name: 'RecruiterHub', color: 'from-violet-500/20 to-violet-600/10', text: 'text-violet-300', border: 'border-violet-500/20' },
+  { name: 'StaffSync',   color: 'from-emerald-500/20 to-emerald-600/10', text: 'text-emerald-300', border: 'border-emerald-500/20' },
+  { name: 'CoreHR',      color: 'from-orange-500/20 to-orange-600/10', text: 'text-orange-300', border: 'border-orange-500/20' },
 ];
 
 export function FeaturesSection() {
