@@ -17,21 +17,22 @@ Plataforma B2B SaaS de triagem e inteligência de recrutamento voltada para time
 
 | Camada | Tecnologia | Função Arquitetural |
 | :--- | :--- | :--- |
-| **Core Framework** | Next.js (App Router) | Renderização SSG/ISR para a Landing Page e CSR reativo para a ferramenta. |
-| **Linguagem** | TypeScript (Strict) | Tipagem estrita com zero uso de `any` para confiabilidade do código. |
+| **Core Framework** | Next.js (App Router) | Server Components nativos (SSG/ISR) na Landing Page e Client Islands para interatividade reativa. |
+| **Linguagem** | TypeScript (Strict) | Tipagem estrita com zero uso de `any` para máxima confiabilidade do código. |
 | **Estilização** | Tailwind CSS + `clsx` | Design system responsivo com animações leves via Framer Motion. |
-| **IA & Backend** | Vercel AI SDK + Groq API | Processamento de linguagem natural com o modelo `Llama 3.1 Instant (Groq LPU)`. |
-| **Parsing PDF** | `pdfjs-dist` (Client-Side) | Extração de texto no navegador do usuário, garantindo payload leve (JSON). |
-| **Validação** | Zod | Schemas estritos para garantia do formato de resposta estruturada da IA. |
-| **Testes** | Vitest + React Testing Library | Cobertura unitária e de integração de componentes e schemas Zod. |
+| **IA & Backend** | Vercel AI SDK + Groq API | Processamento de linguagem natural com Rate Limiting por IP, sanitização contra Prompt Injection e fallback de modelos. |
+| **Parsing PDF** | `pdfjs-dist` (Client-Side) | Extração de texto exclusiva para arquivos PDF no navegador do usuário, garantindo payload leve (JSON). |
+| **Validação** | Zod | Schemas estritos tanto para entrada (tamanho/sanitização) quanto para saída estruturada da IA. |
+| **Testes** | Vitest + React Testing Library | Cobertura unitária e de integração de componentes, utilitários, API e schemas Zod. |
 
 ---
 
 ## ⚡ Principais Funcionalidades
 
 - 📄 **Parsing de Currículo no Cliente:** Processamento do arquivo PDF diretamente no navegador, eliminando o envio de arquivos pesados ao servidor.
-- 🎯 **Scoring Ponderado (0-100):** Cálculo de compatibilidade do candidato com base no currículo e no cargo-alvo configurado.
+- 🎯 **Scoring Ponderado (0-100):** Cálculo de compatibilidade do candidato com base no currículo e no cargo-alvo configurado sem vieses arbitrários.
 - 💡 **Análise Qualitativa:** Emissão instantânea de resumo executivo, pontos fortes alinhados à vaga e sugestões de melhoria no documento.
+- 🛡️ **Segurança & Defesa Backend:** Rate limiting por IP, sanitização do cargo contra Prompt Injection e isolamento de erros internos do servidor.
 - ♿ **Acessibilidade (WCAG 2.2 AA):** Suporte total à navegação por teclado (`Tab`, `Enter`, `Space`) e anúncios em tempo real via `aria-live="polite"`.
 - 🛡️ **UX Defensiva:** Tratamento gracioso dos estados de interface: *Empty*, *Loading (Skeleton Screen)*, *Success* e *Error*.
 

@@ -24,10 +24,10 @@
     "description": "Pontos fortes, resumos e sugestões de perguntas para entrevistas gerados automaticamente."
   },
   {
-    "id": "conformidade-lgpd",
+    "id": "privacidade-efemera",
     "iconName": "ShieldCheck",
-    "title": "Conformidade LGPD & GDPR",
-    "description": "Anonimização de dados pessoais e criptografia de ponta a ponta durante o processamento."
+    "title": "Processamento Seguro & Efêmero",
+    "description": "Análise realizada em memória durante a sessão, sem retenção permanente de currículos no servidor."
   },
   {
     "id": "integracao-workflow",
