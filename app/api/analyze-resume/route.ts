@@ -150,7 +150,10 @@ Requisitos:
     const validation = ResumeAnalysisSchema.safeParse(object);
     if (!validation.success) {
       return NextResponse.json(
-        { error: "A resposta gerada pela IA não atendeu aos critérios de validação estrutural." },
+        {
+          error:
+            "A resposta gerada pela IA não atendeu aos critérios de validação estrutural.",
+        },
         { status: 500 },
       );
     }

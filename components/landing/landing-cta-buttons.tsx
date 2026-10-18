@@ -96,7 +96,7 @@ export function NavCtaButtons() {
         Entrar
       </Button>
       <Link href="/playground">
-        <Button variant="primary" size="sm" className="shadow-lg shadow-accent/20">
+        <Button variant="primary" size="sm">
           Testar Agora
         </Button>
       </Link>
@@ -122,7 +122,7 @@ export function HeroCtaButtons() {
         <Button
           variant="primary"
           size="lg"
-          className="w-full py-8 gap-2 text-base shadow-lg shadow-accent/25"
+          className="w-full py-8 gap-2 text-base"
         >
           Experimentar Playground IA
           <ArrowRight className="w-5 h-5" />

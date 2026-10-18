@@ -45,7 +45,7 @@ function MobileDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/60 z-40 md:hidden"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -116,7 +116,7 @@ export function Header() {
 
   return (
     <>
-      <header className="w-full border-b border-border-subtle bg-canvas/60 backdrop-blur-md sticky top-0 z-40">
+      <header className="w-full border-b border-border-subtle bg-canvas/80 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Image
             src="/logo.svg"

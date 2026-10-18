@@ -19,7 +19,7 @@ test.describe('Playground E2E Flow', () => {
   });
 
   test('should show error when invalid file extension is uploaded', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/playground');
 
     const dropzoneInput = page.getByTestId('dropzone-input');
     await expect(dropzoneInput).toBeAttached();
@@ -32,7 +32,7 @@ test.describe('Playground E2E Flow', () => {
     });
 
     // Check error message
-    const alert = page.getByRole('alert');
+    const alert = page.getByTestId('dropzone-error');
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/não suportado/i);
   });

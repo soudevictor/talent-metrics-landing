@@ -32,7 +32,7 @@ function PartnerMarquee() {
       <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-canvas to-transparent z-10 pointer-events-none" />
       <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-canvas to-transparent z-10 pointer-events-none" />
 
-      <p className="text-center text-xs text-text-muted/50 font-medium uppercase tracking-widest mb-5">
+      <p className="text-center text-sm text-text-muted/50 font-medium mb-5">
         Projetado para equipes de RH modernas e empresas de tecnologia
       </p>
 
@@ -72,7 +72,7 @@ export default function Home() {
       <section className="relative z-10 pt-20 pb-0 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col items-center text-center">
         {/* Live engine badge */}
         <AnimatedSection>
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent-glow border border-accent/25 text-accent text-xs sm:text-sm font-medium mb-8 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent-glow border border-accent/25 text-accent text-xs sm:text-sm font-medium mb-8">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-status-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent" />
@@ -84,9 +84,7 @@ export default function Home() {
         <AnimatedSection delay={0.1}>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-text-primary max-w-4xl leading-[1.1]">
             Transforme montanhas de currículos em{" "}
-            <span className="bg-gradient-to-r from-accent via-teal-400 to-cyan-400 bg-clip-text text-transparent">
-              decisões estratégicas
-            </span>
+            <span className="text-accent">decisões estratégicas</span>
           </h1>
         </AnimatedSection>
 

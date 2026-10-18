@@ -10,10 +10,7 @@ export function ProductMockup() {
   const [activeTab, setActiveTab] = useState<MockTab>("Visão do RH");
 
   return (
-    <div className="mt-16 w-full max-w-4xl rounded-2xl border border-border-subtle bg-surface backdrop-blur-xl shadow-2xl shadow-black/50 relative overflow-hidden">
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-accent/3 via-transparent to-teal-500/3 pointer-events-none" />
-
+    <div className="mt-16 w-full max-w-4xl rounded-2xl border border-border-subtle bg-surface relative overflow-hidden">
       {/* Window chrome */}
       <div className="flex items-center gap-3 px-5 pt-4 pb-3 border-b border-border-subtle">
         <div className="flex gap-1.5">
@@ -21,7 +18,7 @@ export function ProductMockup() {
           <div className="w-3 h-3 rounded-full bg-amber-500/70" />
           <div className="w-3 h-3 rounded-full bg-accent/70" />
         </div>
-        <span className="text-xs text-text-muted font-mono ml-2 flex-1 truncate hidden xs:block">
+        <span className="text-xs text-text-muted ml-2 flex-1 truncate hidden xs:block">
           talent-metrics-ai-engine · v2.0
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-full bg-accent-glow text-accent border border-accent/20 font-medium shrink-0">
@@ -56,17 +53,14 @@ export function ProductMockup() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
             {/* Score */}
             <div className="p-4 rounded-xl bg-canvas/60 border border-border-subtle hover:border-border-hover transition-colors">
-              <div className="text-xs text-text-muted mb-2 font-medium uppercase tracking-wider">
+              <div className="text-xs text-text-muted mb-2 font-medium">
                 Score de Fit
               </div>
               <div className="text-3xl font-bold text-accent tabular-nums">
                 94 / 100
               </div>
               <div className="w-full bg-surface-elevated h-1.5 rounded-full mt-3 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-accent to-teal-400 h-full rounded-full"
-                  style={{ width: "94%" }}
-                />
+                <div className="bg-accent h-full rounded-full" style={{ width: "94%" }} />
               </div>
               <div className="mt-2 flex items-center gap-1.5">
                 <TrendingUp className="w-3 h-3 text-accent" />
@@ -78,7 +72,7 @@ export function ProductMockup() {
 
             {/* Matching points */}
             <div className="p-4 rounded-xl bg-canvas/60 border border-border-subtle hover:border-border-hover transition-colors">
-              <div className="text-xs text-text-muted mb-2 font-medium uppercase tracking-wider">
+              <div className="text-xs text-text-muted mb-2 font-medium">
                 Pontos Fortes
               </div>
               <ul className="text-xs text-text-primary space-y-2 mt-1">
@@ -96,8 +90,8 @@ export function ProductMockup() {
             </div>
 
             {/* Gaps */}
-            <div className="p-4 rounded-xl bg-canvas/60 border border-border-subtle hover:border-amber-500/20 transition-colors">
-              <div className="text-xs text-text-muted mb-2 font-medium uppercase tracking-wider">
+            <div className="p-4 rounded-xl bg-canvas/60 border border-border-subtle hover:border-border-hover transition-colors">
+              <div className="text-xs text-text-muted mb-2 font-medium">
                 A Aprofundar
               </div>
               <ul className="text-xs text-text-primary space-y-2 mt-1">
@@ -115,47 +109,39 @@ export function ProductMockup() {
             </div>
           </div>
         ) : (
-          <div className="space-y-3 text-left font-mono text-xs">
+          <div className="space-y-3 text-left text-xs">
             {[
               {
-                step: "01",
                 label: "pdf_parser",
                 detail: "Extracted 1,847 tokens from resume.pdf",
                 color: "text-text-muted",
               },
               {
-                step: "02",
                 label: "skill_mapper",
                 detail: "Detected 14 hard skills · 6 soft skills",
                 color: "text-text-muted",
               },
               {
-                step: "03",
                 label: "jd_comparator",
                 detail: "JD match threshold: 0.89 cosine similarity",
                 color: "text-accent",
               },
               {
-                step: "04",
                 label: "fit_scorer",
                 detail: "Score: 94.2 · Percentile: P97 in talent pool",
                 color: "text-accent",
               },
               {
-                step: "05",
                 label: "report_generator",
-                detail: "✓ Executive summary generated in 1.4s",
-                color: "text-teal-400",
+                detail: "Executive summary generated in 1.4s",
+                color: "text-text-primary",
               },
             ].map((row) => (
               <div
-                key={row.step}
+                key={row.label}
                 className="flex items-start gap-3 p-2.5 rounded-lg bg-canvas/50 border border-border-subtle"
               >
-                <span className="text-text-muted/40 shrink-0">[{row.step}]</span>
-                <span className="text-indigo-400 shrink-0 w-32">
-                  {row.label}
-                </span>
+                <span className="text-text-muted shrink-0 w-32">{row.label}</span>
                 <span className={row.color}>{row.detail}</span>
               </div>
             ))}

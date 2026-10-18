@@ -11,9 +11,9 @@ export function StreamingFeedback({ statusMessage = 'Analisando currículo com I
     <div
       role="status"
       aria-live="polite"
-      className="flex items-center justify-center gap-3 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-medium"
+      className="flex items-center justify-center gap-3 p-4 rounded-xl bg-accent/10 border border-accent/20 text-accent text-sm font-medium"
     >
-      <Loader2 className="w-5 h-5 animate-spin text-indigo-400 shrink-0" />
+      <Loader2 className="w-5 h-5 animate-spin text-accent shrink-0" />
       <span>{statusMessage}</span>
     </div>
   );
