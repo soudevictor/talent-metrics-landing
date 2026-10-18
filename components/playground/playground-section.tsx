@@ -13,17 +13,17 @@ import sampleResumesData from "@/data/sample-resumes.json";
 import type { SampleResume, CandidateHistoryItem } from "@/types";
 import type { ResumeAnalysis } from "@/lib/schemas/resume-schema";
 import { ResumeAnalysisSchema } from "@/lib/schemas/resume-schema";
-import { AlertCircle, FlaskConical, RotateCcw, BarChart2 } from "lucide-react";
+import { AlertCircle, FlaskConical, RotateCcw, BarChart2, CheckCircle2, FileText, Clock } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const sampleResumes = sampleResumesData as SampleResume[];
 
-/* ── AI Reasoning Stepper ───────────────────────────────────────────────── */
+/* ── AI Reasoning Stepper — Progresso visual real ───────────────────────── */
 const REASONING_STEPS = [
-  "📄  Extraindo e sanitizando estrutura do PDF...",
-  "🎯  Mapeando hard e soft skills do candidato...",
-  "⚖️  Comparando requisitos com a vaga informada...",
-  "📊  Gerando matriz de fit e relatório executivo...",
+  { label: "Extraindo PDF", detail: "Lendo e sanitizando estrutura do documento" },
+  { label: "Mapeando Skills", detail: "Identificando hard e soft skills do candidato" },
+  { label: "Comparando Vaga", detail: "Alinhando requisitos com o perfil informado" },
+  { label: "Gerando Relatório", detail: "Calculando fit e produzindo resumo executivo" },
 ] as const;
 
 function AiReasoningStepper({ label }: { label?: string }) {
@@ -33,53 +33,99 @@ function AiReasoningStepper({ label }: { label?: string }) {
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setStepIndex((prev) => (prev + 1) % REASONING_STEPS.length);
-    }, 600);
+    }, 800);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [label]);
+
+  // Reset stepIndex when label changes
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStepIndex(0);
+  }, [label]);
+
+  const currentStep = REASONING_STEPS[stepIndex];
+  const progress = ((stepIndex + 1) / REASONING_STEPS.length) * 100;
 
   return (
-    <div className="space-y-4" aria-busy="true">
-      <div className="flex flex-col items-center gap-2 text-center">
-        {/* Spinner */}
-        <div className="relative w-8 h-8">
-          <span
-            className="absolute inset-0 inline-block rounded-full border-2 border-accent border-t-transparent animate-spin"
-            role="status"
-            aria-label="Analisando currículo..."
-          />
-        </div>
-        {label ? (
-          <p className="text-xs text-text-muted font-medium">
-            Analisando perfil{" "}
-            <span className="text-text-primary font-semibold">
-              &ldquo;{label}&rdquo;
-            </span>
-          </p>
-        ) : null}
-
-        {/* Animated step text */}
-        <p
-          key={stepIndex}
-          className="text-sm text-accent font-medium tabular-nums"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {REASONING_STEPS[stepIndex]}
-        </p>
-
-        {/* Step indicator dots */}
-        <div className="flex gap-1.5 mt-1" aria-hidden="true">
-          {REASONING_STEPS.map((_, i) => (
-            <span
-              key={i}
-              className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
-                i === stepIndex ? "bg-accent" : "bg-surface-elevated"
-              }`}
+    <div className="space-y-6" aria-busy="true" role="status" aria-live="polite">
+      {/* Header com progresso */}
+      <div className="flex items-center gap-4">
+        <div className="relative w-10 h-10">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8" className="text-surface-elevated" />
+            <circle
+              cx="50"
+              cy="50"
+              r="45"
+              fill="none"
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={`${progress * 2.83} 283`}
+              className="text-accent transition-all duration-500 ease-out"
+              stroke="currentColor"
             />
-          ))}
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-xs font-bold text-text-primary">{Math.round(progress)}%</span>
+          </div>
         </div>
+        <div>
+          <p className="text-sm font-medium text-text-primary">
+            {label ? `Analisando: &ldquo;${label}&rdquo;` : "Analisando currículo..."}
+          </p>
+          <p className="text-xs text-text-muted">{currentStep.detail}</p>
+        </div>
+      </div>
+
+      {/* Barra de progresso global */}
+      <div className="w-full h-1.5 bg-surface-elevated rounded-full overflow-hidden">
+        <div
+          className="h-full bg-accent rounded-full transition-all duration-500 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* Passos detalhados */}
+      <div className="space-y-3" role="list" aria-label="Etapas da análise">
+        {REASONING_STEPS.map((step, i) => (
+          <div
+            key={step.label}
+            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
+              i < stepIndex
+                ? "bg-accent/5 border border-accent/20"
+                : i === stepIndex
+                ? "bg-surface border border-accent/30"
+                : "bg-surface/50 border border-border-subtle"
+            }`}
+            role="listitem"
+            aria-current={i === stepIndex ? "step" : undefined}
+          >
+            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+              i < stepIndex
+                ? "bg-accent text-canvas"
+                : i === stepIndex
+                ? "bg-accent/10 text-accent border border-accent/30"
+                : "bg-surface-elevated text-text-muted"
+            }`}>
+              {i < stepIndex ? (
+                <CheckCircle2 className="w-5 h-5" aria-hidden="true" />
+              ) : (
+                i + 1
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`font-medium text-sm ${i <= stepIndex ? "text-text-primary" : "text-text-muted"}`}>
+                {step.label}
+              </p>
+              <p className="text-xs text-text-muted truncate">{step.detail}</p>
+            </div>
+            {i === stepIndex && (
+              <span className="w-4 h-4 rounded-full bg-accent animate-pulse" aria-hidden="true" />
+            )}
+          </div>
+        ))}
       </div>
 
       <SkeletonCard />
@@ -93,7 +139,7 @@ async function extractText(file: File): Promise<string> {
 
   if (extension !== ".pdf") {
     throw new Error(
-      `Formato "${extension || 'desconhecido'}" não suportado. Envie apenas arquivos .pdf.`
+      `Formato "${extension || 'desconhecido'}" não suportado. Envie apenas arquivos .pdf.`,
     );
   }
 
@@ -124,7 +170,6 @@ function persistToHistory(
   jobTitle: string,
   resumeText: string
 ): void {
-  // Heuristic: grab first proper noun sequence from text as candidate name
   const nameMatch = resumeText.match(/^([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][a-záàâãéêíóôõúç]+(?:\s+[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][a-záàâãéêíóôõúç]+){1,3})/m);
   const candidateName = nameMatch?.[1]?.trim() ?? "Candidato";
 
@@ -143,6 +188,52 @@ function persistToHistory(
   saveCandidateToHistory(item);
 }
 
+/* ── Quick Test Card — Visual card para currículos de exemplo ───────────── */
+function QuickTestCard({ 
+  sample, 
+  onClick, 
+  isActive 
+}: { 
+  sample: SampleResume; 
+  onClick: () => void; 
+  isActive: boolean; 
+}) {
+  return (
+    <button
+      onClick={onClick}
+      data-testid={`quick-test-${sample.id}`}
+      className={`relative group flex flex-col p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
+        isActive
+          ? "border-accent/50 bg-accent/5 shadow-lg shadow-accent/10"
+          : "border-border-subtle bg-surface/40 hover:border-border-hover hover:bg-surface hover:shadow-md"
+      }`}
+    >
+      <div className="flex items-start gap-3 mb-3">
+        <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
+          isActive ? "bg-accent/10 text-accent" : "bg-surface-elevated text-text-muted"
+        }`}>
+          <FlaskConical className="w-5 h-5" aria-hidden="true" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-sm text-text-primary truncate">{sample.label}</p>
+          <p className="text-xs text-text-muted mt-0.5 truncate">{sample.description}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 text-[11px] text-text-muted">
+        <FileText className="w-3 h-3 shrink-0" aria-hidden="true" />
+        <span>PDF</span>
+        <Clock className="w-3 h-3 shrink-0" aria-hidden="true" />
+        <span>~2s</span>
+      </div>
+      {isActive && (
+        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
+          <CheckCircle2 className="w-3.5 h-3.5 text-canvas" aria-hidden="true" />
+        </div>
+      )}
+    </button>
+  );
+}
+
 /* ── Component ──────────────────────────────────────────────────────────── */
 type PlaygroundState = "empty" | "loading" | "error" | "success";
 
@@ -159,7 +250,6 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
   const [history, setHistory] = useState<CandidateHistoryItem[]>([]);
   const lastResumeText = useRef<string>("");
 
-  // Load history on mount and whenever drawer opens
   const refreshHistory = useCallback(() => {
     setHistory(loadCandidateHistory());
   }, []);
@@ -210,12 +300,7 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
           throw new Error("Resposta da IA fora do formato esperado.");
         }
 
-        // Persist to localStorage history
-        persistToHistory(
-          validation.data,
-          jobTitle?.trim() ?? "",
-          resumeText
-        );
+        persistToHistory(validation.data, jobTitle?.trim() ?? "", resumeText);
         refreshHistory();
 
         setResult(validation.data);
@@ -276,93 +361,86 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
       <div className="w-full space-y-6" aria-live="polite">
         {/* Empty State */}
         {state === "empty" ? (
-          <div className="space-y-4">
+          <div className="space-y-6 animate-in fade-in duration-300">
             <Dropzone onFileSelect={handleFileSelect} />
 
             {/* Divider */}
-            <div className="relative flex items-center gap-3">
+            <div className="relative flex items-center gap-4">
               <div className="h-px flex-1 bg-border-subtle" />
-              <span className="text-xs text-text-muted font-medium">
-                ou teste rapidamente
+              <span className="text-xs text-text-muted font-medium px-3">
+                ou teste com exemplos
               </span>
               <div className="h-px flex-1 bg-border-subtle" />
             </div>
 
-            {/* Quick-test buttons — neon badge style */}
-            <div
-              className="flex flex-wrap gap-2 justify-center"
-              role="group"
-              aria-label="Testes rápidos com currículos de exemplo"
-            >
+            {/* Quick-test cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {sampleResumes.map((sample) => (
-                <button
+                <QuickTestCard
                   key={sample.id}
+                  sample={sample}
                   onClick={() => handleQuickTest(sample)}
-                  data-testid={`quick-test-${sample.id}`}
-                  title={sample.description}
-                  className="badge-neon-hover inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border border-accent/30 bg-accent/6 text-accent hover:bg-accent/12 hover:border-accent/50 hover:text-accent transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas cursor-pointer"
-                >
-                  <FlaskConical className="w-3.5 h-3.5" aria-hidden="true" />
-                  {sample.label}
-                </button>
+                  isActive={activeQuickTest === sample.id}
+                />
               ))}
             </div>
 
-            {/* Compare button (visible when history exists) */}
-            {history.length > 0 ? (
-              <div className="flex justify-center pt-2">
-                <button
-                  type="button"
-                  onClick={openDrawer}
-                  data-testid="open-comparison-drawer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border border-border-subtle bg-surface/40 text-text-muted hover:text-text-primary hover:border-border-hover hover:bg-surface transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
-                >
-                  <BarChart2 className="w-4 h-4 text-accent" aria-hidden="true" />
-                  Comparar com Candidatos Anteriores
-                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-accent/15 text-accent text-[10px] font-bold">
-                    {history.length}
-                  </span>
-                </button>
-              </div>
-            ) : null}
+            {/* Compare button */}
+            {history.length > 0 && (
+              <button
+                type="button"
+                onClick={openDrawer}
+                data-testid="open-comparison-drawer"
+                className="mx-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-border-subtle bg-surface/40 text-text-muted hover:text-text-primary hover:border-border-hover hover:bg-surface hover:shadow-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+              >
+                <BarChart2 className="w-4 h-4 text-accent" aria-hidden="true" />
+                Comparar com {history.length} candidato{history.length > 1 ? "s" : ""} anterior{history.length > 1 ? "es" : ""}
+              </button>
+            )}
           </div>
         ) : null}
 
         {/* Loading — AI Reasoning Stepper */}
-        {state === "loading" ? <AiReasoningStepper label={activeLabel} /> : null}
+        {state === "loading" && (
+          <AiReasoningStepper label={activeLabel} />
+        )}
 
         {/* Error State */}
-        {state === "error" ? (
-          <div className="space-y-4">
+        {state === "error" && (
+          <div className="space-y-4 animate-in fade-in duration-200 slide-in-from-top-2">
             <div
               role="alert"
-              className="flex flex-col items-center gap-3 text-center p-6 rounded-2xl border border-red-500/20 bg-red-500/5"
+              aria-live="assertive"
+              className="relative p-6 rounded-2xl border border-red-500/30 bg-red-500/5"
             >
-              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-red-400" />
+              <div className="absolute -top-3 left-6 w-6 h-6 rounded-full bg-canvas border border-red-500/30 flex items-center justify-center">
+                <AlertCircle className="w-4 h-4 text-red-400" />
               </div>
-              <p className="text-sm text-red-300 font-medium">
-                Não foi possível analisar o currículo
-              </p>
-              <p className="text-xs text-text-muted max-w-md">{errorMessage}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRetry}
-                className="mt-2 gap-2"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Tentar novamente
-              </Button>
+              <div className="flex flex-col items-center gap-3 text-center">
+                <p className="text-sm font-medium text-text-primary">
+                  Não foi possível analisar o currículo
+                </p>
+                <p className="text-xs text-text-muted max-w-md">{errorMessage}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRetry}
+                  className="mt-2 gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Tentar novamente
+                </Button>
+              </div>
             </div>
           </div>
-        ) : null}
+        )}
 
         {/* Success State */}
-        {state === "success" && result ? (
-          <div className="space-y-4" aria-atomic="true">
+        {state === "success" && result && (
+          <div className="space-y-6 animate-in fade-in duration-300 slide-in-from-bottom-2" aria-atomic="true">
             <ScoreCard data={result} />
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Button
                 variant="ghost"
                 size="sm"
@@ -373,23 +451,20 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
                 Analisar outro currículo
               </Button>
 
-              {history.length > 1 ? (
+              {history.length > 1 && (
                 <button
                   type="button"
                   onClick={openDrawer}
                   data-testid="open-comparison-drawer-success"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold border border-accent/30 bg-accent/8 text-accent hover:bg-accent/15 hover:border-accent/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-accent/30 bg-accent/5 text-accent hover:bg-accent/10 hover:border-accent/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
                 >
                   <BarChart2 className="w-4 h-4" aria-hidden="true" />
-                  Comparar com Anteriores
-                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-accent/20 text-accent text-[10px] font-bold">
-                    {history.length}
-                  </span>
+                  Comparar com {history.length} candidatos
                 </button>
-              ) : null}
+              )}
             </div>
           </div>
-        ) : null}
+        )}
       </div>
 
       {/* Comparison Drawer */}

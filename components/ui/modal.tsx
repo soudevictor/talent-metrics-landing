@@ -64,11 +64,7 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
             className="relative w-full max-w-lg rounded-2xl border border-border-subtle bg-surface-elevated/95 shadow-2xl shadow-black/60 backdrop-blur-xl focus-visible:outline-none overflow-hidden"
           >
             {/* Top accent bar */}
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
-
-            {/* Decorative glows */}
-            <div className="absolute -top-24 -left-24 w-48 h-48 bg-accent-glow rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-accent-glow rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-accent" />
 
             {/* Header */}
             <div className="relative flex items-start justify-between p-6 pb-4 border-b border-border-subtle">

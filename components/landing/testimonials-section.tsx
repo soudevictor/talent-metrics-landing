@@ -1,48 +1,75 @@
-import { Star } from 'lucide-react';
 import testimonialsData from '@/data/testimonials.json';
 import type { Testimonial } from '@/types';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Quote } from 'lucide-react';
 
 const testimonials = testimonialsData as Testimonial[];
+
+/* ── Aspas decorativas como elemento gráfico ────────────────────────────── */
+function QuoteMark() {
+  return (
+    <div className="text-accent/20" aria-hidden="true">
+      <Quote className="w-12 h-12" />
+    </div>
+  );
+}
+
+/* ── Card de depoimento unificado ───────────────────────────────────────── */
+function TestimonialCard({ 
+  t, 
+  featured = false 
+}: { 
+  t: Testimonial; 
+  featured?: boolean; 
+}) {
+  return (
+    <article className={`relative p-6 sm:p-8 rounded-2xl border bg-surface transition-all duration-300 hover:border-border-hover ${
+      featured 
+        ? 'border-accent/30 bg-accent/5' 
+        : 'border-border-subtle hover:shadow-lg'
+    }`}>
+      <QuoteMark />
+      
+      <blockquote className="relative z-10 mt-2">
+        <p className={`text-text-primary leading-relaxed italic ${featured ? 'text-xl sm:text-2xl' : 'text-lg'}`}>
+          &ldquo;{t.quote}&rdquo;
+        </p>
+      </blockquote>
+      
+      <footer className="mt-6 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-surface-elevated flex items-center justify-center text-accent font-semibold text-sm">
+          {t.author.split(' ').map(n => n[0]).join('')}
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-text-primary">{t.author}</p>
+          <p className="text-xs text-text-muted">{t.role} · {t.company}</p>
+        </div>
+      </footer>
+    </article>
+  );
+}
 
 export function TestimonialsSection() {
   return (
     <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full scroll-mt-24">
       <div className="text-center mb-16">
-        <Badge variant="accent" className="mb-4">
-          Depoimentos
-        </Badge>
         <h2 className="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight">
           Quem usa,{' '}
-          <span className="bg-gradient-to-r from-accent to-teal-400 bg-clip-text text-transparent">
-            recomenda
-          </span>
+          <span className="text-accent">recomenda</span>
         </h2>
         <p className="mt-4 text-text-muted text-base sm:text-lg max-w-2xl mx-auto">
           Veja como times de RH de todo o Brasil estão revolucionando seus processos seletivos.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {testimonials.map((t) => (
-          <Card key={t.id} className="flex flex-col justify-between hover:border-border-hover transition-all">
-            <CardHeader>
-              <div className="flex gap-1 text-amber-400 mb-4" aria-label={`Avaliação: ${t.rating} de 5 estrelas`}>
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400" aria-hidden="true" />
-                ))}
-              </div>
-              <p className="text-text-primary text-sm italic leading-relaxed">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-            </CardHeader>
+      {/* Depoimento em destaque — largura total */}
+      <div className="mb-16">
+        <TestimonialCard t={testimonials[0]} featured />
+      </div>
 
-            <CardContent className="mt-4 pt-4 border-t border-border-subtle">
-              <p className="text-sm font-bold text-text-primary">{t.author}</p>
-              <p className="text-xs text-text-muted">{t.role} • {t.company}</p>
-            </CardContent>
-          </Card>
+      {/* Dois depoimentos lado a lado */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {testimonials.slice(1).map((t) => (
+          <TestimonialCard key={t.id} t={t} />
         ))}
       </div>
     </section>

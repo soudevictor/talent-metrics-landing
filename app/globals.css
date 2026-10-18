@@ -3,12 +3,12 @@
 /* ─── Design Tokens ──────────────────────────────────────────────────────── */
 @theme {
   --color-canvas: #09090b;
-  --color-surface: rgba(24, 24, 27, 0.7);
+  --color-surface: rgba(24, 24, 27, 0.6);
   --color-surface-elevated: #27272a;
-  --color-border-subtle: rgba(39, 39, 42, 0.8);
-  --color-border-hover: rgba(16, 185, 129, 0.4);
+  --color-border-subtle: rgba(39, 39, 42, 0.7);
+  --color-border-hover: rgba(16, 185, 129, 0.35);
   --color-accent: #10b981;
-  --color-accent-glow: rgba(16, 185, 129, 0.15);
+  --color-accent-glow: rgba(16, 185, 129, 0.1);
   --color-text-primary: #f4f4f5;
   --color-text-muted: #a1a1aa;
 }
@@ -39,16 +39,6 @@
 .animate-marquee {
   animation: marquee 28s linear infinite;
   will-change: transform;
-}
-
-/* ─── Neon pulse glow for quick-test badges ──────────────────────────────── */
-@keyframes neon-pulse {
-  0%, 100% { box-shadow: 0 0 0px 0px rgb(16 185 129 / 0); }
-  50%       { box-shadow: 0 0 8px 2px rgb(16 185 129 / 0.25); }
-}
-
-.badge-neon-hover:hover {
-  animation: neon-pulse 1.8s ease-in-out infinite;
 }
 
 /* ─── Status dot pulse ────────────────────────────────────────────────────── */

@@ -1,10 +1,9 @@
-import { Cpu, Target, ShieldCheck, Zap, BarChart3, Clock, type LucideProps } from 'lucide-react';
+import { Cpu, Target, ShieldCheck, Zap, BarChart3, Clock } from 'lucide-react';
 import featuresData from '@/data/features.json';
 import type { Feature } from '@/types';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-type IconComponent = React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
+type IconComponent = React.ComponentType<{ className?: string }>;
 
 const ICON_MAP: Record<string, IconComponent> = {
   Cpu,
@@ -19,54 +18,105 @@ const features = featuresData as Feature[];
 
 /* ── ATS Integration logos (Fictícios) ─────────────────────────────────── */
 const ATS_INTEGRATIONS = [
-  { name: 'OpenATS',     color: 'from-blue-500/20 to-blue-600/10',   text: 'text-blue-300',    border: 'border-blue-500/20'   },
-  { name: 'TalentFlow',  color: 'from-green-500/20 to-green-600/10', text: 'text-green-300',   border: 'border-green-500/20'  },
-  { name: 'RecruiterHub', color: 'from-violet-500/20 to-violet-600/10', text: 'text-violet-300', border: 'border-violet-500/20' },
-  { name: 'StaffSync',   color: 'from-emerald-500/20 to-emerald-600/10', text: 'text-emerald-300', border: 'border-emerald-500/20' },
-  { name: 'CoreHR',      color: 'from-orange-500/20 to-orange-600/10', text: 'text-orange-300', border: 'border-orange-500/20' },
+  'OpenATS',
+  'TalentFlow',
+  'RecruiterHub',
+  'StaffSync',
+  'CoreHR',
 ];
+
+/* ── Ícone dentro de círculo (desenho em código, paleta única) ─────────── */
+function FeatureIcon({ iconName, size = 'w-10 h-10' }: { iconName: string; size?: string }) {
+  const Icon = ICON_MAP[iconName];
+  if (!Icon) return null;
+  return (
+    <div className={`${size} rounded-xl bg-accent-glow border border-accent/20 flex items-center justify-center`}>
+      <Icon className="w-5 h-5 text-accent" aria-hidden="true" />
+    </div>
+  );
+}
+
+/* ── Linha de feature: ícone à esquerda, conteúdo à direita ────────────── */
+function FeatureRowLeftIcon({ feature }: { feature: Feature }) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="lg:col-span-3 flex items-center justify-center">
+        <FeatureIcon iconName={feature.iconName} size="w-14 h-14" />
+      </div>
+      <div className="lg:col-span-9">
+        <h3 className="text-xl font-semibold text-text-primary mb-2">{feature.title}</h3>
+        <p className="text-text-muted leading-relaxed">{feature.description}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Linha de feature: conteúdo à esquerda, ícone à direita ────────────── */
+function FeatureRowRightIcon({ feature }: { feature: Feature }) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="lg:col-span-9">
+        <h3 className="text-xl font-semibold text-text-primary mb-2">{feature.title}</h3>
+        <p className="text-text-muted leading-relaxed">{feature.description}</p>
+      </div>
+      <div className="lg:col-span-3 flex items-center justify-center">
+        <FeatureIcon iconName={feature.iconName} size="w-14 h-14" />
+      </div>
+    </div>
+  );
+}
+
+/* ── Linha de feature: ícone à esquerda, conteúdo à direita, faixa larga ─ */
+function FeatureRowFull({ feature }: { feature: Feature }) {
+  return (
+    <div className="flex items-start gap-6">
+      <div className="flex-shrink-0">
+        <FeatureIcon iconName={feature.iconName} size="w-12 h-12" />
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold text-text-primary mb-1">{feature.title}</h3>
+        <p className="text-sm text-text-muted leading-relaxed">{feature.description}</p>
+      </div>
+    </div>
+  );
+}
 
 export function FeaturesSection() {
   return (
     <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full scroll-mt-24">
       <div className="text-center mb-16">
-        <Badge variant="accent" className="mb-4">
-          Recursos Principais
-        </Badge>
         <h2 className="text-3xl sm:text-5xl font-extrabold text-text-primary tracking-tight">
           Tudo o que sua equipe precisa para{' '}
-          <span className="bg-gradient-to-r from-accent via-teal-400 to-cyan-400 bg-clip-text text-transparent">
-            contratar melhor
-          </span>
+          <span className="text-accent">contratar melhor</span>
         </h2>
         <p className="mt-4 text-text-muted text-base sm:text-lg max-w-2xl mx-auto">
           Elimine tarefas repetitivas de triagem e dedique seu tempo ao que realmente importa: conectar pessoas.
         </p>
       </div>
 
-      {/* Feature cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {features.map((feature) => {
-          const Icon = ICON_MAP[feature.iconName];
-          return (
-            <Card
-              key={feature.id}
-              className="group hover:border-border-hover hover:bg-surface transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30"
-            >
-              <CardHeader>
-                <div className="w-10 h-10 rounded-xl bg-accent-glow border border-accent/20 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
-                  {Icon ? <Icon className="w-5 h-5 text-accent" aria-hidden="true" /> : null}
-                </div>
-                <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
-                <CardDescription className="text-sm leading-relaxed">{feature.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          );
-        })}
+      {/* Par 1 — layout variado: ícone à esquerda, conteúdo à direita */}
+      <div className="mb-16">
+        {features.slice(0, 2).map((feature) => (
+          <FeatureRowLeftIcon key={feature.id} feature={feature} />
+        ))}
       </div>
 
-      {/* ATS Integrations sub-section */}
-      <div className="mt-20 rounded-2xl border border-border-subtle bg-surface backdrop-blur-sm p-8 sm:p-10">
+      {/* Par 2 — layout variado: conteúdo à esquerda, ícone à direita */}
+      <div className="mb-16">
+        {features.slice(2, 4).map((feature) => (
+          <FeatureRowRightIcon key={feature.id} feature={feature} />
+        ))}
+      </div>
+
+      {/* Par 3 — layout variado: faixas largas com ícone pequeno à esquerda */}
+      <div>
+        {features.slice(4, 6).map((feature) => (
+          <FeatureRowFull key={feature.id} feature={feature} />
+        ))}
+      </div>
+
+      {/* ATS Integrations sub-section (sem vidro, sem gradientes, sem monospace) */}
+      <div className="mt-24 rounded-2xl border border-border-subtle bg-surface p-8 sm:p-10">
         <div className="text-center mb-8">
           <Badge variant="accent" className="mb-3">
             Integrações ATS
@@ -80,14 +130,13 @@ export function FeaturesSection() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-4">
-          {ATS_INTEGRATIONS.map((ats) => (
+          {ATS_INTEGRATIONS.map((name) => (
             <div
-              key={ats.name}
-              className={`inline-flex items-center gap-3 px-5 py-3 rounded-xl border ${ats.border} bg-gradient-to-br ${ats.color} backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:shadow-lg`}
+              key={name}
+              className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-border-subtle bg-surface-elevated hover:border-border-hover transition-colors"
             >
-              <div className={`w-2.5 h-2.5 rounded-full bg-current ${ats.text} opacity-70`} />
-              <span className={`text-sm font-semibold ${ats.text}`}>{ats.name}</span>
-              <span className="text-xs text-text-muted border border-border-subtle px-1.5 py-0.5 rounded font-mono">
+              <span className="text-sm font-semibold text-text-primary">{name}</span>
+              <span className="text-xs text-text-muted border border-border-subtle px-1.5 py-0.5 rounded">
                 API
               </span>
             </div>

@@ -12,6 +12,7 @@ const FORMATS_DESCRIPTION_ID = 'dropzone-formats-description';
 interface DropzoneProps {
   onFileSelect: (file: File) => void;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 function getFileExtension(filename: string): string {
@@ -41,7 +42,7 @@ function validateFile(file: File): { valid: boolean; error?: string } {
   return { valid: true };
 }
 
-export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
+export function Dropzone({ onFileSelect, disabled = false, isLoading = false }: DropzoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -180,7 +181,7 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
                 clearFile();
               }}
               aria-label="Remover arquivo selecionado"
-              className="p-1 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <X className="w-4 h-4" />
             </button>
@@ -188,18 +189,19 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
         ) : (
           <>
             <div className={cn(
-              'w-12 h-12 rounded-full flex items-center justify-center transition-colors',
-              isDragOver ? 'bg-accent-glow' : 'bg-surface-elevated'
+              'w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200',
+              isDragOver ? 'bg-accent/10 border-2 border-accent' : 'bg-surface-elevated border-2 border-border-subtle'
             )}>
-              <Upload className={cn('w-6 h-6', isDragOver ? 'text-accent' : 'text-text-muted')} />
+              <Upload className={cn('w-7 h-7', isDragOver ? 'text-accent' : 'text-text-muted')} />
             </div>
-            <div className="text-center">
+            <div className="text-center space-y-1">
               <p className="text-sm text-text-primary font-medium">
                 Arraste seu currículo aqui ou{' '}
                 <span className="text-accent underline underline-offset-2">
                   clique para selecionar
                 </span>
               </p>
+              <p className="text-xs text-text-muted">Apenas PDF · Máx. 5MB</p>
             </div>
           </>
         )}
@@ -208,11 +210,21 @@ export function Dropzone({ onFileSelect, disabled = false }: DropzoneProps) {
       {/* Error State */}
       {error ? (
         <div
+          data-testid="dropzone-error"
           role="alert"
-          className="mt-3 flex items-start gap-2 text-red-400 text-xs sm:text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3"
+          aria-live="polite"
+          className="mt-3 flex items-start gap-2 text-text-primary text-xs sm:text-sm bg-surface/5 border border-border-subtle rounded-lg p-3"
         >
-          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-text-primary" />
           <span>{error}</span>
+        </div>
+      ) : null}
+
+      {/* Loading State */}
+      {isLoading && !selectedFile && !error ? (
+        <div className="mt-3 flex items-center gap-2 text-text-muted text-xs sm:text-sm">
+          <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" role="status" aria-label="Processando..." />
+          <span>Processando currículo...</span>
         </div>
       ) : null}
 

@@ -27,7 +27,7 @@ export function DemoBanner() {
     <div
       role="region"
       aria-label="Aviso de projeto demonstrativo"
-      className="bg-surface border-b border-border-subtle text-text-muted text-xs sm:text-sm py-2 px-4 sticky top-0 z-50 backdrop-blur-md flex items-center justify-between transition-all"
+      className="bg-surface border-b border-border-subtle text-text-muted text-xs sm:text-sm py-2 px-4 sticky top-0 z-50 flex items-center justify-between transition-all"
     >
       <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-center text-center">
         <Sparkles className="w-4 h-4 text-accent shrink-0" aria-hidden="true" />
