@@ -1,7 +1,7 @@
 "use client";
 
 import { PlaygroundSection } from "@/components/playground/playground-section";
-import { ArrowLeft, Briefcase, Sparkles } from "lucide-react";
+import { ArrowLeft, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
@@ -12,7 +12,7 @@ export function PlaygroundClient() {
   const [jobTitle, setJobTitle] = useState("");
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-canvas">
+    <div className="relative min-h-screen flex flex-col overflow-x-clip bg-canvas">
       {/* Header */}
       <header className="w-full border-b border-border-subtle bg-canvas/80 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -27,27 +27,23 @@ export function PlaygroundClient() {
           <Image
             src="/logo.svg"
             alt="TalentMetrics"
-            width={140}
-            height={64}
-            style={{ width: 140, height: "auto" }}
+            width={156}
+            height={56}
+            className="h-10 w-auto"
           />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-10">
+      <div className="relative z-10 flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-10">
         {/* Page Heading — Hero próprio do Playground */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs sm:text-sm font-medium">
-            <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Groq LPU Engine · Operational</span>
-          </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-text-primary tracking-tight max-w-2xl mx-auto">
-            Teste a Análise com IA
+            Teste a análise com IA
           </h1>
           <p className="text-text-muted text-sm sm:text-base max-w-lg mx-auto">
-            Envie um currículo em PDF e veja em tempo real como nossa IA
-            avalia o perfil do candidato.
+            Envie um currículo em PDF e veja como nossa IA avalia o perfil do
+            candidato.
           </p>
         </div>
 
@@ -81,11 +77,12 @@ export function PlaygroundClient() {
         {/* Playground Section (Dropzone + Results) */}
         <div className="w-full max-w-xl mx-auto">
           <PlaygroundSection jobTitle={jobTitle} />
-          <p className="text-center text-xs text-text-muted/60 mt-4">
-            <span className="font-medium text-text-muted/80">Dica:</span> Envie o currículo do criador da plataforma para desbloquear o Modo Desenvolvedor.
+          <p className="text-center text-sm text-text-muted/70 mt-4">
+            Demonstração com dados fictícios. A análise é gerada por IA e pode
+            conter imprecisões.
           </p>
         </div>
-      </main>
+      </div>
 
       {/* Footer */}
       <footer className="w-full border-t border-border-subtle py-6 px-4 text-center text-xs text-text-muted/60">

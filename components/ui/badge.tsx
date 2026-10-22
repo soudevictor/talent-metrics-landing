@@ -14,7 +14,7 @@ export function Badge({ className, variant = 'accent', ...props }: BadgeProps) {
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border backdrop-blur-sm transition-colors',
+        'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-colors',
         variants[variant],
         className
       )}

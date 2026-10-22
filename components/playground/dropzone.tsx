@@ -145,13 +145,13 @@ export function Dropzone({ onFileSelect, disabled = false, isLoading = false }: 
         onDragLeave={handleDragLeave}
         data-testid="dropzone"
         className={cn(
-          'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 sm:p-10 transition-all duration-200 cursor-pointer',
+          'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 sm:p-10 transition-colors duration-200 cursor-pointer',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas',
           isDragOver && !disabled
             ? 'border-accent bg-accent-glow scale-[1.01]'
             : 'border-border-subtle bg-surface/40 hover:border-border-hover hover:bg-surface',
           disabled && 'opacity-50 pointer-events-none',
-          error && 'border-red-500/50 bg-red-500/5'
+          error && 'border-error/50 bg-error/5'
         )}
       >
         <input
@@ -174,22 +174,11 @@ export function Dropzone({ onFileSelect, disabled = false, isLoading = false }: 
                 {(selectedFile.size / 1024).toFixed(0)} KB
               </p>
             </div>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                clearFile();
-              }}
-              aria-label="Remover arquivo selecionado"
-              className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
         ) : (
           <>
             <div className={cn(
-              'w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-200',
+              'w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-200',
               isDragOver ? 'bg-accent/10 border-2 border-accent' : 'bg-surface-elevated border-2 border-border-subtle'
             )}>
               <Upload className={cn('w-7 h-7', isDragOver ? 'text-accent' : 'text-text-muted')} />
@@ -206,6 +195,19 @@ export function Dropzone({ onFileSelect, disabled = false, isLoading = false }: 
           </>
         )}
       </div>
+
+      {selectedFile ? (
+        <div className="mt-2 flex justify-center">
+          <button
+            type="button"
+            onClick={clearFile}
+            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs text-text-muted transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <X className="w-3.5 h-3.5" aria-hidden="true" />
+            Remover arquivo selecionado
+          </button>
+        </div>
+      ) : null}
 
       {/* Error State */}
       {error ? (

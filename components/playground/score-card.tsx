@@ -19,22 +19,29 @@ function getScoreLabel(score: number): string {
 
 function getScoreColorClass(score: number): string {
   if (score >= 80) return 'text-accent';
-  if (score >= 60) return 'text-amber-400';
-  return 'text-red-400';
+  if (score >= 60) return 'text-warning';
+  return 'text-error';
+}
+
+function getScoreBgClass(score: number): string {
+  if (score >= 80) return 'bg-accent';
+  if (score >= 60) return 'bg-warning';
+  return 'bg-error';
 }
 
 export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
   const { score, summary, matchingPoints, improvementPoints, isEasterEgg } = data as ResumeAnalysis & { isEasterEgg?: boolean };
   const scoreColor = getScoreColorClass(score);
+  const scoreBg = getScoreBgClass(score);
   const label = getScoreLabel(score);
 
   return (
     <div
       aria-live="polite"
       aria-atomic="true"
-      className={`relative w-full rounded-2xl border bg-surface p-6 sm:p-8 space-y-8 transition-all duration-500 ${
+      className={`relative w-full rounded-2xl border bg-surface p-6 sm:p-8 space-y-8 transition-colors ${
         isEasterEgg
-          ? 'border-accent/50 bg-accent/5 shadow-xl shadow-accent/10'
+          ? 'border-accent/50 bg-accent/5'
           : 'border-border-subtle'
       }`}
     >
@@ -87,7 +94,7 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
               strokeWidth="10"
               strokeLinecap="round"
               strokeDasharray={`${(score / 100) * 326.7} 326.7`}
-              className={cn('transition-all duration-1000 ease-out', scoreColor)}
+              className={cn('transition-[stroke-dasharray] duration-700 ease-out', scoreColor)}
               stroke="currentColor"
             />
           </svg>
@@ -99,7 +106,7 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
 
         {/* Score Label & Bar */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-text-muted uppercase tracking-wider mb-1">
+          <p className="text-sm text-text-muted mb-1">
             Score de Compatibilidade
           </p>
           <p className={cn('text-2xl sm:text-3xl font-bold', scoreColor)}>
@@ -107,23 +114,26 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
           </p>
           <div className="w-full max-w-xs sm:max-w-md bg-surface-elevated h-2 rounded-full mt-4 overflow-hidden">
             <div
-              className={cn('h-full rounded-full transition-all duration-1000 ease-out', scoreColor)}
+              data-testid="score-bar"
+              role="progressbar"
+              aria-label="Score de compatibilidade"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={score}
+              className={cn('h-full rounded-full transition-[width] duration-700 ease-out', scoreBg)}
               style={{ width: `${score}%` }}
             />
           </div>
           <p className="mt-2 text-sm text-text-muted">
             {score >= 80 && <TrendingUp className="inline w-3.5 h-3.5 mr-1" aria-hidden="true" />}
-            {score >= 80 ? "Top 20% dos candidatos" : score >= 60 ? "Acima da média" : "Abaixo da média"}
+            {score >= 80 ? "Faixa alta de compatibilidade" : score >= 60 ? "Faixa média de compatibilidade" : "Faixa baixa de compatibilidade"}
           </p>
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="h-px bg-border-subtle" />
-
       {/* Summary */}
       <div>
-        <h3 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">
+        <h3 className="text-sm font-semibold text-text-muted mb-3">
           Resumo Executivo
         </h3>
         <p className="text-base text-text-primary leading-relaxed">{summary}</p>
@@ -150,13 +160,13 @@ export function ScoreCard({ data, isStreaming = false }: ScoreCardProps) {
         {/* Improvement Points */}
         <div className="p-4 rounded-xl bg-canvas/40 border border-border-subtle">
           <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400" />
+            <AlertTriangle className="w-4 h-4 text-warning" />
             Pontos de Melhoria
           </h3>
           <ul className="space-y-2.5">
             {improvementPoints.map((point, index) => (
               <li key={index} className="flex items-start gap-2 text-sm text-text-primary">
-                <span className="w-2 h-2 rounded-full bg-amber-400 mt-2 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-warning mt-2 shrink-0" />
                 {point}
               </li>
             ))}

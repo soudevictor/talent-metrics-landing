@@ -20,9 +20,6 @@ export function SkeletonCard() {
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="h-px bg-border-subtle" />
-
       {/* Summary skeleton */}
       <div className="space-y-3">
         <div className="h-4 w-32 rounded bg-surface-elevated" />

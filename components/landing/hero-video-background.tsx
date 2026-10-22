@@ -67,7 +67,7 @@ export function HeroVideoBackground() {
       {/* 1. Imagem de Fallback: visível inicialmente; some imediatamente quando o vídeo toca */}
       <div
         className={`absolute inset-0 ${
-          isPlaying ? "hidden motion-reduce:block" : "block"
+          isPlaying ? "opacity-0 motion-reduce:opacity-100" : "opacity-100"
         }`}
       >
         <Image

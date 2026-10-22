@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CandidateHistoryItemSchema } from "@/lib/schemas/candidate-history-schema";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { cn } from "@/lib/utils";
 import type { CandidateHistoryItem } from "@/types";
 
@@ -15,7 +18,13 @@ export function loadCandidateHistory(): CandidateHistoryItem[] {
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed as CandidateHistoryItem[];
+
+    // Validate item by item: one corrupt entry must not wipe the whole history.
+    return parsed
+      .map((item) => CandidateHistoryItemSchema.safeParse(item))
+      .filter((result) => result.success)
+      .map((result) => result.data)
+      .slice(0, 5);
   } catch {
     return [];
   }
@@ -24,9 +33,12 @@ export function loadCandidateHistory(): CandidateHistoryItem[] {
 export function saveCandidateToHistory(item: CandidateHistoryItem): void {
   if (typeof window === "undefined") return;
   try {
+    const validated = CandidateHistoryItemSchema.safeParse(item);
+    if (!validated.success) return;
+
     const history = loadCandidateHistory();
-    const filtered = history.filter((h) => h.id !== item.id);
-    const updated = [item, ...filtered].slice(0, 5);
+    const filtered = history.filter((h) => h.id !== validated.data.id);
+    const updated = [validated.data, ...filtered].slice(0, 5);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   } catch {
     // localStorage may be unavailable in some browser contexts
@@ -141,7 +153,7 @@ function CandidateRow({
           <ul className="space-y-1.5">
             {candidate.improvementPoints.slice(0, 2).map((pt, i) => (
               <li key={i} className="text-sm text-text-primary flex items-start gap-2 break-words">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-warning mt-1.5 shrink-0" />
                 <span className="flex-1 min-w-0">{pt}</span>
               </li>
             ))}
@@ -194,44 +206,21 @@ export function ComparisonDrawer({
   onClose,
   candidates,
 }: ComparisonDrawerProps) {
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const drawerRef = useRef<HTMLElement>(null);
 
-  /* Trap focus & close on Escape */
   useEffect(() => {
-    if (!isOpen) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-
-      if (e.key === "Tab" && drawerRef.current) {
-        const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            last?.focus();
-            e.preventDefault();
-          }
-        } else {
-          if (document.activeElement === last) {
-            first?.focus();
-            e.preventDefault();
-          }
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    drawerRef.current?.querySelector<HTMLElement>('[tabindex="0"], button')?.focus();
-
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  useDialogFocus(drawerRef, isOpen && mounted, onClose);
 
   const maxScore = Math.max(...candidates.map((c) => c.score), 1);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen ? (
         <>
@@ -242,7 +231,7 @@ export function ComparisonDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 z-50"
+            className="fixed inset-0 bg-black/60 z-[90]"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -254,11 +243,12 @@ export function ComparisonDrawer({
             role="dialog"
             aria-modal="true"
             aria-label="Comparação de candidatos"
+            tabIndex={-1}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-[480px] md:w-[600px] max-w-full bg-canvas border-l border-border-subtle z-50 flex flex-col shadow-2xl shadow-black/60 overflow-hidden"
+            className="fixed right-0 top-0 h-full w-full sm:w-[480px] md:w-[600px] max-w-full bg-canvas border-l border-border-subtle z-[100] flex flex-col shadow-2xl shadow-black/50 overflow-hidden focus-visible:outline-none"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle shrink-0">
@@ -335,6 +325,7 @@ export function ComparisonDrawer({
           </motion.aside>
         </>
       ) : null}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

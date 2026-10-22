@@ -26,21 +26,21 @@ interface AnimatedSectionProps {
  */
 export function AnimatedSection({ children, className, delay = 0 }: AnimatedSectionProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [canAnimate, setCanAnimate] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCanAnimate(typeof IntersectionObserver !== 'undefined');
     setIsMounted(true);
   }, []);
 
   // SSR + first synchronous client render → plain div (no inline styles).
   // This ensures the hydrated DOM matches the server-rendered HTML exactly.
-  if (!isMounted) {
-    return <div className={className}>{children}</div>;
-  }
-
-  // After hydration: if the user prefers reduced motion, keep a plain div.
-  if (prefersReducedMotion) {
+  // Without IntersectionObserver (or with reduced motion) the content stays
+  // visible as a plain div instead of waiting for a scroll event that never
+  // arrives.
+  if (!isMounted || !canAnimate || prefersReducedMotion) {
     return <div className={className}>{children}</div>;
   }
 

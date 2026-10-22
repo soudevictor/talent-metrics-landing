@@ -1,60 +1,115 @@
-# Plano de Implementação — Talent Metrics Landing Upgrade
+# Plano de Correção — Talent Metrics 2026-10
 
-Este plano organiza o trabalho em 4 sprints sequenciais, cada um com um objetivo entregável e verificável. A ordem respeita dependências: o design system e tokens devem estar prontos antes das seções; as seções da landing antes do playground; animações e testes por último, mas em paralelo com o refinamento de cada sprint.
+Este plano substitui o antigo “4 sprints concluídos”. A auditoria de 22/10/2026 encontrou
+regressões visuais, de acessibilidade e de confiabilidade que os sprints anteriores não
+capturaram. O trabalho agora é **corretivo e verificável**, em quatro fases com dependência
+explícita.
 
-## Sprint 1 — Design System & Hero (Fundação)
-**Objetivo:** Estabelecer a base visual (tokens, paleta esverdeada ajustada, tipografia, componentes primitivos) e reescrever a seção Hero da landing segundo as regras de casa (sem gradientes abrasivos, sem eyebrows, títulos em 2 linhas, movimento intencional).
+## Fase A — Documentos e política (base)
 
-**Dependências:** Nenhuma (início imediato).
-**Paralelizável com:** Nada (é a base dos próximos sprints).
-**Entregável:** Landing com hero revisado e design system consistente; `npm run build` e `npm run type-check` passando.
+**Objetivo:** alinhar spec, plano, backlog e `AGENTS.md` com o estado real do código e com a
+decisão do cliente sobre conteúdo fictício.
 
-**Riscos:**
-- Escolha de tom de verde que não contraste bem com o fundo escuro (`#09090b`). Mitigação: testar contraste antes de fechar a paleta.
-- Vídeo de fundo causando CLS. Mitigação: manter imagem estática como fallback imediato e `overflow: hidden` estrito.
-
----
-
-## Sprint 2 — Seções Internas da Landing (Features, Pricing, Testimonials, Footer)
-**Objetivo:** Reescrever as seções Features, Pricing, Testimonials e Footer com composições variadas (sem grids de cards idênticos), usando o design system do Sprint 1. Incluir partner marquee e CTA buttons.
-
-**Dependências:** Sprint 1.
-**Paralelizável com:** Nada dentro deste sprint (as seções compartilham o mesmo design system, mas podem ser escritas em ordem independente uma vez que os tokens estejam prontos).
-**Entregável:** Landing page completa com todas as seções revisadas; `npm run test` 100% verde.
-
-**Riscos:**
-- Grid de cards idênticos voltando por hábito. Mitigação: usar composições distintas por seção (ex: features em colunas alternadas, pricing em coluna central destacada, testimonials em faixa larga).
-- Depoimentos fictícios sendo apresentados como reais. Mitigação: manter o aviso legal visível e não inventar dados.
+**Dependências:** nenhuma.
+**Entregável:** `SPEC.md`, `tasks/plan.md`, `tasks/todo.md`, `AGENTS.md` atualizados;
+`agent.md` removido em favor de `AGENTS.md`.
+**Riscos:** repetir alegações antigas sem medição. Mitigação: só marcar `[x]` após verificação;
+estados “Parcial” e “Não atingido” são permitidos.
 
 ---
 
-## Sprint 3 — Playground & API (Funcionalidade de IA)
-**Objetivo:** Revisar a página `/playground` (dropzone, scorecard, estados de loading/error/empty), garantir o uso correto de `useObject`/`experimental_useObject` com schema Zod, e validar o endpoint `/api/analyze-resume` (incluindo Easter Egg do criador, rate limiting, sanitização de prompt injection).
+## Fase B — P0 (bloqueadores de uso)
 
-**Dependências:** Sprint 1 (design system para componentes UI do playground).
-**Paralelizável com:** Sprint 2 pode estar em andamento, mas o playground depende dos componentes primitivos (`Button`, `Card`, `Badge`) já finalizados.
-**Entregável:** Playground funcional com estados defensivos; testes de API e componentes passando.
+**Objetivo:** devolver navegação, leitura e interação básicas.
 
+1. **Sticky real:** trocar `overflow-hidden`/`overflow-x: hidden` por `overflow-x: clip`;
+   banner demo deixa de ser `sticky`.
+2. **Ritmo das features:** `space-y-12` entre linhas; remover badge/eyebrow da sub-seção ATS.
+3. **Score legível:** cor de fundo separada da cor de texto no `ScoreCard`.
+4. **Diálogos:** hook único de focus trap + restore + scroll lock; Header centraliza o modal
+   de login; drawer fecha antes do modal abrir.
+5. **Conteúdo demo:** rótulos visíveis em pricing/testimonials/parceiros; remover marcas reais
+   (Greenhouse/Gupy) e manter apenas ficção.
+6. **Camadas:** drawer/modal em portal acima do header/banner; banner sem `z-50`.
+
+**Dependências:** Fase A (critérios acordados).
+**Entregável:** P0-01…P0-06 verdes em browser + testes de regressão.
 **Riscos:**
-- Streaming da Groq falhando sem fallback. Mitigação: implementar fallback de modelo e estado de error visível.
-- Hidratação travada no `AnimatedSection` do playground. Mitigação: remover `isMounted` condicional prematuro.
+- `overflow-x: clip` não suportado em navegador antigo → fallback visual aceitável; testar
+  Chromium atual.
+- Focus trap quebrar navegação normal → limitar o trap ao diálogo aberto e restaurar o foco.
+- Rótulos demo demais poluírem a página → usar uma linha discreta por seção, não um banner
+  repetido.
 
 ---
 
-## Sprint 4 — Animações, Acessibilidade, Testes E2E e Deploy
-**Objetivo:** Camada de movimento (entrada sequencial por seção, feedback de controles, pelo menos 8 elementos em movimento), respeitar `prefers-reduced-motion`, garantir WCAG 2.2 AA (teclado, foco, aria-live), rodar testes E2E com Playwright, validar Web Vitals (LCP < 2.5s, CLS < 0.1) e preparar para deploy na Vercel gratuita.
+## Fase C — P1 (qualidade e confiabilidade)
 
-**Dependências:** Sprints 1, 2 e 3.
-**Paralelizável com:** Refinamento final de qualquer seção anterior.
-**Entregável:** Projeto completo pronto para produção; `npm run test`, `npm run test:e2e`, `npm run type-check`, `npm run lint` e `npm run build` todos passando.
+**Objetivo:** eliminar os problemas que fazem o demo parecer quebrado mesmo depois do P0.
 
+1. **Hero:** H1 ≤ 2 linhas em 1440/768/390; remover chip/eyebrow; escala responsiva.
+2. **Semântica de links:** `buttonVariants()` para CTAs; nenhum `<a><button>`.
+3. **Motion acessível:** `AnimatedSection` com fallback de visibilidade; reduced motion
+   mantém conteúdo; drawers sem depender de animação para aparecer.
+4. **Easter egg:** schema de resposta do cliente preserva `isEasterEgg`.
+5. **Loading real:** progresso por tempo decorrido (cap 92%), `AbortController` com timeout
+   de 45 s, erro específico e retry.
+6. **PDF local:** copiar worker para `public/` e usar `/pdf.worker.min.mjs`.
+7. **Histórico:** schema Zod, `safeParse` por item, limite 5, tolerância a lixo.
+8. **API:** timeout/abort por modelo no fallback; sem request pendurada.
+
+**Dependências:** Fase B (especialmente diálogos e banner).
+**Entregável:** P1-01…P1-10 verdes; testes novos cobrindo cada correção.
 **Riscos:**
-- Animações exageradas poluindo a página. Mitigação: seguir a regra de "uma assinatura de movimento + entradas sequenciais + feedback de controle".
-- Deploy na Vercel gratuita falhando por variáveis de ambiente. Mitigação: verificar `GROQ_API_KEY` no painel da Vercel antes do deploy final.
+- Worker local aumentar o bundle → é asset estático, não entra no JS bundle.
+- Timeout curto demais derrubar análise legítima → 30 s por modelo, 45 s no cliente.
+- Alterar schema de resposta quebrar o playground → schema novo é aditivo
+  (`ResumeAnalysisSchema.extend`).
+
+---
+
+## Fase D — P2, verificação e entrega
+
+**Objetivo:** polir o que sobrou, provar que não houve regressão e deixar o repositório limpo.
+
+1. `transition-all` → transições específicas; remover sombras em repouso e hairlines
+   decorativas restantes.
+2. Corrigir warning de `next/image` no logo (dimensões intrínsecas 156×56).
+3. Documentar limitações: rate limit por instância, confiança em `x-forwarded-for` e README
+   atualizado com o stack real.
+4. Rodar `lint` → `type-check` → `test` → `build`.
+5. Rodar E2E com cuidado: restaurar `playwright-report/index.html` e
+   `test-results/.last-run.json` se forem reescritos.
+6. Verificar no browser em 1440/768/390: header sticky, H1, score, foco, drawer, reduced
+   motion.
+
+**Dependências:** Fases B e C.
+**Entregável:** checklist final completo; nenhum commit sem autorização.
+**Riscos:**
+- E2E reutilizar dev server velho → reiniciar/validar a porta 3000.
+- Artefatos rastreados serem commitados por engano → `git status` antes de qualquer commit.
+
+---
+
+## Ordem de execução
+
+```
+A (docs) → B (P0) → C (P1) → D (P2 + verificação)
+```
+
+Dentro da Fase B, a ordem é: camadas/sticky → features → score → diálogos → conteúdo demo.
+Dentro da Fase C: hero/links → motion → Easter egg → loading → PDF/histórico → API.
+
+## Critérios de parada
+
+- Um P0 só fecha com evidência no browser **e** teste de regressão.
+- Um P1 pode ser aceito como dívida **se** documentado no `tasks/todo.md` com justificativa.
+- Nenhuma fase avança com `lint`/`type-check`/`test` vermelhos.
+- Nenhum commit é criado sem autorização explícita.
 
 ## Verificação entre fases
-Antes de iniciar cada sprint, confirmar:
-- [ ] Sprint anterior com `npm run test` 100% verde
-- [ ] `npm run type-check` sem erros
-- [ ] `npm run lint` sem erros
-- [ ] Critérios de sucesso do sprint anterior atendidos
+
+- [ ] Fase A: documentos revisados e `agent.md` resolvido.
+- [ ] Fase B: P0 verdes em browser + testes.
+- [ ] Fase C: P1 verdes + testes.
+- [ ] Fase D: `lint`, `type-check`, `test`, `build`, E2E e browser.
