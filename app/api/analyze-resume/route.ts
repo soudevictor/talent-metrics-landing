@@ -1,21 +1,62 @@
-import { ResumeAnalysisSchema } from "@/lib/schemas/resume-schema";
+import {
+  AnalyzeResumeInputSchema,
+  ResumeAnalysisSchema,
+} from "@/lib/schemas/resume-schema";
+import { checkRateLimit } from "@/lib/rate-limiter";
+import { getClientIp, sanitizeJobTitle } from "@/lib/security";
 import { groq } from "@ai-sdk/groq";
 import { generateObject } from "ai";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const payload = await request.json().catch(() => null);
+    // 1. Rate Limiting por IP para proteção contra abuso e estouro de cota
+    const clientIp = getClientIp(request);
+    const rateLimit = checkRateLimit(clientIp);
 
-    if (!payload || !payload.resumeText) {
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        {
+          error:
+            "Limite de requisições excedido. Por favor, aguarde alguns instantes antes de enviar um novo currículo.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds),
+          },
+        },
+      );
+    }
+
+    // 2. Validação estrita do payload e controle de tamanho
+    const rawPayload = await request.json().catch(() => null);
+
+    if (
+      !rawPayload ||
+      typeof rawPayload !== "object" ||
+      !("resumeText" in rawPayload) ||
+      !rawPayload.resumeText ||
+      typeof rawPayload.resumeText !== "string"
+    ) {
       return NextResponse.json(
         { error: 'Payload inválido. Envie um JSON com o campo "resumeText".' },
         { status: 400 },
       );
     }
 
-    const { resumeText, jobTitle } = payload;
+    const parseResult = AnalyzeResumeInputSchema.safeParse(rawPayload);
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues?.[0]?.message ||
+        'Payload inválido. Envie um JSON com o campo "resumeText".';
+      return NextResponse.json({ error: firstError }, { status: 400 });
+    }
 
+    const { resumeText, jobTitle } = parseResult.data;
+    const sanitizedJobTitle = sanitizeJobTitle(jobTitle);
+
+    // 3. Verificação de chave de ambiente
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
@@ -27,56 +68,57 @@ export async function POST(request: Request) {
       );
     }
 
-    const isCreatorResume = /jo[aã]o\s+victor\s+carvalho(?:\s+de\s+souza)?/i.test(
-      resumeText as string
-    );
+    // 4. Creator Mode isolado atrás de flag explícita de desenvolvimento
+    const isDevCreatorMode =
+      process.env.NODE_ENV === "development" &&
+      process.env.ENABLE_CREATOR_MODE === "true";
+
+    const isCreatorResume =
+      isDevCreatorMode &&
+      /jo[aã]o\s+victor\s+carvalho(?:\s+de\s+souza)?/i.test(resumeText);
 
     const easterEggDirective = isCreatorResume
-      ? `
-
-⚠️ MODO CRIADOR ATIVADO ⚠️
-Você acaba de analisar o currículo do próprio criador desta plataforma.
-Siga OBRIGATORIAMENTE as seguintes instruções especiais:
-1. Atribua score: 100 (nota máxima absoluta).
-2. O resumo executivo (summary) deve ser elogioso, bem-humorado e declarar com confiança que este candidato é perfeito para qualquer vaga e qualquer time de tecnologia. Mencione que ele construiu esta própria ferramenta de triagem.
-3. Os pontos fortes (matchingPoints) devem detalhar domínio em Angular, React, Next.js, TypeScript e arquitetura de sistemas B2B.
-4. Declare explicitamente que a contratação é fortemente recomendada com caracter especial de urgência.
-5. Não inclua pontos de melhoria reais; liste algo positivo e encorajador em improvementPoints.`
+      ? `\n\n[DIRETIVA DE TESTE DE DESENVOLVIMENTO]\nModo de demonstração de desenvolvedor ativo.\nAtribua score: 100 e resumo contextualizando capacidades técnicas do criador da plataforma.`
       : "";
 
-    const systemPrompt = `Você é um recrutador sênior e especialista em análise de currículos.
-Analise o currículo fornecido e retorne uma avaliação técnica estruturada em formato JSON.
-Requisitos obrigatórios:
-- Forneça uma nota de 0 a 100 (score) baseada na qualidade geral${
-      jobTitle ? ` e no alinhamento técnico com a vaga de "${jobTitle}"` : ""
-    }.
-- Inclua um resumo executivo claro (summary) com justificativa técnica sobre o perfil.
-- Liste os pontos fortes (matchingPoints) e pontos de melhoria (improvementPoints).${easterEggDirective}`;
+    // 5. System Prompt estrito e sem interpolação direta de dados do usuário (Mitigação de Prompt Injection)
+    const systemPrompt = `Você é um avaliador técnico sênior e imparcial de processos seletivos.
+Sua missão é realizar uma análise puramente técnica, objetiva e criteriosa de currículos profissionais, sem viés ou preconceitos.
+Retorne rigorosamente um objeto JSON compatível com o schema especificado.
+Requisitos:
+- score: número inteiro entre 0 e 100 refletindo a qualidade geral e compatibilidade técnica.
+- summary: resumo executivo técnico conciso e fundamentado sobre a senioridade e experiência.
+- matchingPoints: array com até 4 pontos fortes técnicos mais relevantes.
+- improvementPoints: array com sugestões construtivas e realistas de melhoria ou aprofundamento.${easterEggDirective}`;
 
+    // O input do usuário é delimitado e contextualizado separadamente
     const userPromptText = [
-      "Por favor, faça a análise completa deste currículo com base no perfil e no texto extraído do currículo fornecido abaixo:",
-      `--- TEXTO DO CURRÍCULO ---\n${resumeText}\n---------------------------`,
-      jobTitle
-        ? `Vaga-alvo informada: "${jobTitle}". Considere este contexto para calcular o alinhamento e a nota.`
+      "Realize a análise do currículo a seguir:",
+      `--- INÍCIO DO TEXTO DO CURRÍCULO ---\n${resumeText}\n--- FIM DO TEXTO DO CURRÍCULO ---`,
+      sanitizedJobTitle
+        ? `--- CONTEXTO DA VAGA ---\nCargo pretendido informado para análise: "${sanitizedJobTitle}"\n--- FIM DO CONTEXTO DA VAGA ---`
         : "",
     ]
       .filter(Boolean)
       .join("\n\n");
 
-    const CANDIDATE_MODELS = [
-      process.env.GROQ_MODEL_ID || 'qwen/qwen3.6-27b',
-      'gemma2-9b-it',
-      'openai/gpt-oss-120b',
-    ];
-    
+    const MODEL_TIMEOUT_MS = 30_000;
+    const CANDIDATE_MODELS = Array.from(
+      new Set([
+        process.env.GROQ_MODEL_ID || "qwen/qwen3.6-27b",
+        "gemma2-9b-it",
+        "openai/gpt-oss-120b",
+      ]),
+    );
+
     let object = null;
-    let lastError: Error | null = null;
     let successfulModel = "";
 
     for (const modelId of CANDIDATE_MODELS) {
       try {
         const result = await generateObject({
           model: groq(modelId),
+          abortSignal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
           providerOptions: {
             groq: {
               structuredOutputs: false,
@@ -94,14 +136,17 @@ Requisitos obrigatórios:
         object = result.object;
         successfulModel = modelId;
         break;
-      } catch (error) {
-        lastError = error instanceof Error ? error : new Error(String(error));
+      } catch {
+        // Tenta o próximo modelo candidato em caso de falha de cota, rede ou timeout.
       }
     }
 
     if (!object) {
       return NextResponse.json(
-        { error: lastError?.message || "Todos os modelos falharam." },
+        {
+          error:
+            "Não foi possível processar a análise com a IA no momento. Tente novamente mais tarde.",
+        },
         { status: 500 },
       );
     }
@@ -109,20 +154,26 @@ Requisitos obrigatórios:
     const validation = ResumeAnalysisSchema.safeParse(object);
     if (!validation.success) {
       return NextResponse.json(
-        { error: "Resposta da IA fora do formato esperado." },
+        {
+          error:
+            "A resposta gerada pela IA não atendeu aos critérios de validação estrutural.",
+        },
         { status: 500 },
       );
     }
 
     return NextResponse.json(
-      { ...validation.data, isEasterEgg: isCreatorResume, source: isCreatorResume ? "groq-creator-mode" : successfulModel },
+      {
+        ...validation.data,
+        isEasterEgg: isCreatorResume,
+        source: isCreatorResume ? "dev-creator-mode" : successfulModel,
+      },
       { status: 200 },
     );
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Falha ao analisar o currículo com a IA.";
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { error: "Ocorreu uma falha interna no servidor ao processar a análise." },
+      { status: 500 },
+    );
   }
 }

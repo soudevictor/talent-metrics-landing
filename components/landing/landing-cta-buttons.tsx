@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Modal, DemoModalContent } from '@/components/ui/modal';
 import { ArrowRight } from 'lucide-react';
 
@@ -29,7 +29,7 @@ interface LoginModalContentProps {
   onClose: () => void;
 }
 
-function LoginModalContent({ onClose }: LoginModalContentProps) {
+export function LoginModalContent({ onClose }: LoginModalContentProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-text-muted leading-relaxed">
@@ -38,7 +38,7 @@ function LoginModalContent({ onClose }: LoginModalContentProps) {
           projeto demonstrativo para fins de estudo
         </strong>
         . Esta plataforma SaaS fictícia foi criada para demonstrar habilidades
-        de engenharia front-end, integração com IA (Groq/Llama) e design de
+        de engenharia front-end, integração com IA via Groq e design de
         interfaces B2B modernas.
       </p>
 
@@ -83,32 +83,18 @@ function LoginModalContent({ onClose }: LoginModalContentProps) {
   );
 }
 
-export function NavCtaButtons() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-
+export function NavCtaButtons({ onLogin }: { onLogin: () => void }) {
   return (
     <>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsLoginOpen(true)}
-      >
+      <Button variant="outline" size="sm" onClick={onLogin}>
         Entrar
       </Button>
-      <Link href="/playground">
-        <Button variant="primary" size="sm" className="shadow-lg shadow-accent/20">
-          Testar Agora
-        </Button>
-      </Link>
-
-      <Modal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        title="Área de Login"
-        description="Esta é uma funcionalidade fictícia do projeto demonstrativo."
+      <Link
+        href="/playground"
+        className={buttonVariants({ variant: 'primary', size: 'sm' })}
       >
-        <LoginModalContent onClose={() => setIsLoginOpen(false)} />
-      </Modal>
+        Testar Agora
+      </Link>
     </>
   );
 }
@@ -118,20 +104,21 @@ export function HeroCtaButtons() {
 
   return (
     <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md">
-      <Link href="/playground" className="w-full sm:w-auto">
-        <Button
-          variant="primary"
-          size="lg"
-          className="w-full py-8 gap-2 text-base shadow-lg shadow-accent/25"
-        >
-          Experimentar Playground IA
-          <ArrowRight className="w-5 h-5" />
-        </Button>
+      <Link
+        href="/playground"
+        className={buttonVariants({
+          variant: 'primary',
+          size: 'lg',
+          className: 'w-full sm:w-auto gap-2 text-base',
+        })}
+      >
+        Experimentar Playground IA
+        <ArrowRight className="w-5 h-5" aria-hidden="true" />
       </Link>
       <Button
         variant="secondary"
         size="lg"
-        className="w-full sm:w-auto py-8 text-base"
+        className="w-full sm:w-auto text-base"
         onClick={() => setIsDemoOpen(true)}
       >
         Agendar Demonstração

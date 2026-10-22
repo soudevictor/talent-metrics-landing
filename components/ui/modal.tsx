@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, ExternalLink, Calendar, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useDialogFocus } from '@/lib/use-dialog-focus';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface ModalProps {
@@ -17,27 +18,14 @@ export interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, description, children }: ModalProps) {
   const [mounted, setMounted] = React.useState(false);
+  const panelRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  useDialogFocus(panelRef, isOpen && mounted, onClose);
 
   if (!mounted) return null;
 
@@ -48,30 +36,25 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          aria-describedby={description ? 'modal-description' : undefined}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-canvas/80 backdrop-blur-md"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70"
           onClick={onClose}
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            aria-describedby={description ? 'modal-description' : undefined}
+            tabIndex={-1}
+            initial={{ opacity: 0, scale: 0.97, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            transition={{ type: 'spring', duration: 0.45, bounce: 0.25 }}
+            exit={{ opacity: 0, scale: 0.97, y: 12 }}
+            transition={{ type: 'spring', duration: 0.35, bounce: 0.15 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg rounded-2xl border border-border-subtle bg-surface-elevated/95 shadow-2xl shadow-black/60 backdrop-blur-xl focus-visible:outline-none overflow-hidden"
+            className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border-subtle bg-surface-elevated shadow-2xl shadow-black/50 focus-visible:outline-none"
           >
-            {/* Top accent bar */}
-            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
-
-            {/* Decorative glows */}
-            <div className="absolute -top-24 -left-24 w-48 h-48 bg-accent-glow rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-accent-glow rounded-full blur-3xl pointer-events-none" />
-
             {/* Header */}
-            <div className="relative flex items-start justify-between p-6 pb-4 border-b border-border-subtle">
+            <div className="relative flex items-start justify-between gap-4 p-6 pb-4 border-b border-border-subtle">
               <div>
                 <h2 id="modal-title" className="text-xl font-bold text-text-primary tracking-tight">
                   {title}
@@ -83,9 +66,10 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
                 ) : null}
               </div>
               <button
+                type="button"
                 onClick={onClose}
                 aria-label="Fechar janela"
-                className="p-1.5 rounded-full text-text-muted bg-surface hover:text-text-primary hover:bg-surface-elevated transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="p-1.5 rounded-full text-text-muted bg-surface hover:text-text-primary hover:bg-surface-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -162,7 +146,7 @@ export function DemoModalContent({ onClose }: DemoModalContentProps) {
                     key={key}
                     onClick={() => setSelectedSlot(key)}
                     className={cn(
-                      'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer',
+                      'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent cursor-pointer',
                       isActive
                         ? 'bg-accent-glow border-accent/50 text-accent'
                         : 'bg-surface border-border-subtle text-text-muted hover:border-border-hover hover:text-text-primary'

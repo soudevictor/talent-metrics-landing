@@ -3,19 +3,19 @@
     "id": "ia-generativa",
     "iconName": "Cpu",
     "title": "IA Generativa Especializada em RH",
-    "description": "Algoritmos treinados especificamente em recrutamento e avaliação técnica sem vieses inconscientes."
+    "description": "Modelo generativo aplicado à leitura de currículos, com critérios explícitos, resumo estruturado e revisão humana."
   },
   {
     "id": "scoring-fit",
     "iconName": "Target",
     "title": "Scoring de Fit com a Vaga",
-    "description": "Pontuação de 0 a 100 calculada instantaneamente comparando os requisitos da vaga ao perfil do candidato."
+    "description": "Pontuação de 0 a 100 comparando os requisitos da vaga ao perfil do candidato."
   },
   {
     "id": "triagem-rapida",
     "iconName": "Clock",
     "title": "Triagem em Segundos",
-    "description": "Reduza o tempo médio de primeira leitura de 14 dias para menos de 3 segundos por currículo."
+    "description": "Leitura inicial e scoring de cada currículo em segundos, para o time focar na decisão."
   },
   {
     "id": "relatorios-executivos",
@@ -24,15 +24,15 @@
     "description": "Pontos fortes, resumos e sugestões de perguntas para entrevistas gerados automaticamente."
   },
   {
-    "id": "conformidade-lgpd",
+    "id": "privacidade-efemera",
     "iconName": "ShieldCheck",
-    "title": "Conformidade LGPD & GDPR",
-    "description": "Anonimização de dados pessoais e criptografia de ponta a ponta durante o processamento."
+    "title": "Processamento Seguro & Efêmero",
+    "description": "Análise processada durante a sessão, sem persistência de currículos no armazenamento da aplicação."
   },
   {
     "id": "integracao-workflow",
     "iconName": "Zap",
     "title": "Integrado ao seu Workflow",
-    "description": "Exportação fácil de candidatos pré-selecionados diretamente para o seu ATS favorito."
+    "description": "Fluxo de exportação e integração representado com ATS fictícios de demonstração."
   }
 ]
