@@ -89,6 +89,37 @@ describe("POST /api/analyze-resume", () => {
     expect(data.source).toBe("qwen/qwen3.6-27b");
   });
 
+  it("should fall back to the next model when the first one fails", async () => {
+    vi.stubEnv("GROQ_API_KEY", "fake-key");
+
+    vi.mocked(generateObject)
+      .mockRejectedValueOnce(new Error("quota exceeded"))
+      .mockResolvedValueOnce({
+        object: {
+          score: 78,
+          summary: "Perfil analisado pelo modelo de fallback.",
+          matchingPoints: ["React"],
+          improvementPoints: ["Inglês"],
+        },
+      } as never);
+
+    const request = createMockRequest({
+      payload: { resumeText: "Experiência em React" },
+    });
+
+    const response = await POST(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.source).toBe("gemma2-9b-it");
+    expect(vi.mocked(generateObject)).toHaveBeenCalledTimes(2);
+
+    const firstCall = vi.mocked(generateObject).mock.calls[0][0] as {
+      abortSignal?: AbortSignal;
+    };
+    expect(firstCall.abortSignal).toBeInstanceOf(AbortSignal);
+  });
+
   it("should return 400 when resumeText exceeds maximum length (50,000 chars)", async () => {
     const hugeText = "a".repeat(50001);
     const request = createMockRequest({

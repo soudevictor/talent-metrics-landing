@@ -23,10 +23,10 @@
     "description": "Para times de RH em crescimento com volume constante de vagas.",
     "features": [
       "Até 1.500 currículos/mês",
-      "Análise com IA em Tempo Real (LPU Ultra-Fast)",
+      "Análise com IA via Groq (LPU)",
       "Scoring de fit + Perguntas de Entrevista",
       "Anonimização de dados para vagas cegas",
-      "Integração ATS (Greenhouse, Gupy)",
+      "Integração ATS (OpenATS, TalentFlow)",
       "Suporte prioritário"
     ],
     "ctaText": "Testar Plano Pro",
@@ -42,7 +42,7 @@
       "Currículos ilimitados",
       "Modelo de IA customizado por cultura",
       "SLA de 99.9% de disponibilidade",
-      "SSO (SAML/Okta) + Auditoria",
+      "SSO (SAML/OIDC) + Auditoria",
       "Gerente de conta dedicado"
     ],
     "ctaText": "Falar com Consultor",

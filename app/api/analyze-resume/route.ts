@@ -102,11 +102,14 @@ Requisitos:
       .filter(Boolean)
       .join("\n\n");
 
-    const CANDIDATE_MODELS = [
-      process.env.GROQ_MODEL_ID || "qwen/qwen3.6-27b",
-      "gemma2-9b-it",
-      "openai/gpt-oss-120b",
-    ];
+    const MODEL_TIMEOUT_MS = 30_000;
+    const CANDIDATE_MODELS = Array.from(
+      new Set([
+        process.env.GROQ_MODEL_ID || "qwen/qwen3.6-27b",
+        "gemma2-9b-it",
+        "openai/gpt-oss-120b",
+      ]),
+    );
 
     let object = null;
     let successfulModel = "";
@@ -115,6 +118,7 @@ Requisitos:
       try {
         const result = await generateObject({
           model: groq(modelId),
+          abortSignal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
           providerOptions: {
             groq: {
               structuredOutputs: false,
@@ -133,7 +137,7 @@ Requisitos:
         successfulModel = modelId;
         break;
       } catch {
-        // Tenta próximo modelo candidato em caso de falha de cota/rede
+        // Tenta o próximo modelo candidato em caso de falha de cota, rede ou timeout.
       }
     }
 

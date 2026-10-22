@@ -33,6 +33,24 @@ describe('Dropzone', () => {
     expect(handleFileSelect).toHaveBeenCalledWith(file);
   });
 
+  it('keeps the remove control outside the role=button dropzone', () => {
+    const handleFileSelect = vi.fn();
+    render(<Dropzone onFileSelect={handleFileSelect} />);
+
+    const input = screen.getByTestId('dropzone-input');
+    const file = createMockFile('curriculo.pdf', 1024 * 100, 'application/pdf');
+    fireEvent.change(input, { target: { files: [file] } });
+
+    const dropzone = screen.getByTestId('dropzone');
+    expect(dropzone.querySelector('button')).toBeNull();
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Remover arquivo selecionado/i })
+    );
+
+    expect(screen.getByText(/Arraste seu currículo aqui/i)).toBeInTheDocument();
+  });
+
   it('should reject a .docx file and show error', () => {
     const handleFileSelect = vi.fn();
     render(<Dropzone onFileSelect={handleFileSelect} />);

@@ -1,10 +1,15 @@
 "use client";
 
-import { NavCtaButtons } from "@/components/landing/landing-cta-buttons";
+import {
+  LoginModalContent,
+  NavCtaButtons,
+} from "@/components/landing/landing-cta-buttons";
+import { Modal } from "@/components/ui/modal";
+import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export const NAV_LINKS = [
@@ -17,22 +22,15 @@ export const NAV_LINKS = [
 function MobileDrawer({
   isOpen,
   onClose,
+  onLogin,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  onLogin: () => void;
 }) {
-  const drawerRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKey);
-    // Trap focus
-    drawerRef.current?.querySelector<HTMLElement>("button, a")?.focus();
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [isOpen, onClose]);
+  useDialogFocus(drawerRef, isOpen, onClose);
 
   return (
     <AnimatePresence>
@@ -54,14 +52,16 @@ function MobileDrawer({
           <motion.nav
             key="mobile-drawer"
             ref={drawerRef}
+            id="mobile-nav-drawer"
             role="dialog"
             aria-modal="true"
             aria-label="Menu de navegação"
+            tabIndex={-1}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 340, damping: 34 }}
-            className="fixed top-0 right-0 h-full w-72 bg-canvas border-l border-border-subtle z-50 flex flex-col pt-6 pb-8 px-6 md:hidden"
+            className="fixed top-0 right-0 h-full w-72 bg-canvas border-l border-border-subtle z-50 flex flex-col pt-6 pb-8 px-6 md:hidden focus-visible:outline-none"
           >
             {/* Close button */}
             <div className="flex justify-end mb-8">
@@ -101,8 +101,13 @@ function MobileDrawer({
             </ul>
 
             {/* CTA */}
-            <div className="mt-auto border-t border-border-subtle pt-6">
-              <NavCtaButtons />
+            <div className="mt-auto border-t border-border-subtle pt-6 flex flex-col gap-3 [&>*]:w-full">
+              <NavCtaButtons
+                onLogin={() => {
+                  onClose();
+                  onLogin();
+                }}
+              />
             </div>
           </motion.nav>
         </>
@@ -113,17 +118,18 @@ function MobileDrawer({
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
     <>
-      <header className="w-full border-b border-border-subtle bg-canvas/80 sticky top-0 z-40">
+      <header className="w-full border-b border-border-subtle bg-canvas/95 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Image
             src="/logo.svg"
             alt="TalentMetrics"
-            width={140}
-            height={64}
-            style={{ width: 140, height: "auto" }}
+            width={156}
+            height={56}
+            className="h-10 w-auto"
             priority
           />
 
@@ -155,7 +161,7 @@ export function Header() {
 
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-3">
-              <NavCtaButtons />
+              <NavCtaButtons onLogin={() => setIsLoginOpen(true)} />
             </div>
 
             {/* Hamburger — mobile only */}
@@ -174,12 +180,21 @@ export function Header() {
       </header>
 
       {/* Mobile drawer */}
-      <div id="mobile-nav-drawer">
-        <MobileDrawer
-          isOpen={isMobileMenuOpen}
-          onClose={() => setIsMobileMenuOpen(false)}
-        />
-      </div>
+      <MobileDrawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        onLogin={() => setIsLoginOpen(true)}
+      />
+
+      {/* One login modal owned by the header, so the drawer can close first. */}
+      <Modal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        title="Área de Login"
+        description="Esta é uma funcionalidade fictícia do projeto demonstrativo."
+      >
+        <LoginModalContent onClose={() => setIsLoginOpen(false)} />
+      </Modal>
     </>
   );
 }

@@ -11,6 +11,10 @@
   --color-accent-glow: rgba(16, 185, 129, 0.1);
   --color-text-primary: #f4f4f5;
   --color-text-muted: #a1a1aa;
+  --color-warning: #fbbf24;
+  --color-warning-glow: rgba(251, 191, 36, 0.1);
+  --color-error: #f87171;
+  --color-error-glow: rgba(248, 113, 113, 0.1);
 }
 
 @layer base {
@@ -18,12 +22,19 @@
     --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 
+  html {
+    scroll-padding-top: 5rem;
+  }
+
   body {
     font-family: var(--font-inter);
     background-color: var(--color-canvas);
     color: var(--color-text-primary);
+    font-size: 1rem;
+    line-height: 1.6;
     min-height: 100vh;
-    overflow-x: hidden;
+    /* `clip` does not create a scroll container, so `position: sticky` keeps working. */
+    overflow-x: clip;
   }
 }
 
@@ -58,5 +69,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .animate-marquee,
+  .animate-status-ping {
+    animation: none !important;
   }
 }

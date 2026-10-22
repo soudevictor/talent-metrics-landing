@@ -1,10 +1,13 @@
 {
   "name": "talent-metrics-landing",
-  "version": "1.1.1",
-  "description": "Plataforma B2B SaaS de gestão e triagem de currículos por IA (Next.js 15, Groq AI, Tailwind CSS e Vitest).",
+  "version": "1.2.0",
+  "description": "Demo B2B SaaS de triagem de currículos por IA (Next.js 16, Groq API, Tailwind CSS 4 e Vitest).",
   "author": "João Victor Carvalho de Souza (soudevictor) <trabalho.joaovictor2004@gmail.com>",
   "license": "MIT",
   "private": true,
+  "engines": {
+    "node": ">=20.9"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/soudevictor/talent-metrics-landing.git"

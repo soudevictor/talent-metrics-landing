@@ -11,8 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import sampleResumesData from "@/data/sample-resumes.json";
 import type { SampleResume, CandidateHistoryItem } from "@/types";
-import type { ResumeAnalysis } from "@/lib/schemas/resume-schema";
-import { ResumeAnalysisSchema } from "@/lib/schemas/resume-schema";
+import type { ResumeAnalysisResponse } from "@/lib/schemas/resume-schema";
+import { ResumeAnalysisResponseSchema } from "@/lib/schemas/resume-schema";
 import { AlertCircle, FlaskConical, RotateCcw, BarChart2, CheckCircle2, FileText, Clock } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -26,27 +26,35 @@ const REASONING_STEPS = [
   { label: "Gerando Relatório", detail: "Calculando fit e produzindo resumo executivo" },
 ] as const;
 
-function AiReasoningStepper({ label }: { label?: string }) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+const ANALYSIS_BUDGET_MS = 12_000;
+const ANALYSIS_TIMEOUT_MS = 45_000;
+
+function AiReasoningStepper({
+  label,
+  startedAt,
+}: {
+  label?: string;
+  startedAt: number;
+}) {
+  const [now, setNow] = useState(startedAt);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setStepIndex((prev) => (prev + 1) % REASONING_STEPS.length);
-    }, 800);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [label]);
+    const interval = window.setInterval(() => setNow(Date.now()), 400);
+    return () => window.clearInterval(interval);
+  }, []);
 
-  // Reset stepIndex when label changes
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStepIndex(0);
-  }, [label]);
-
+  const elapsed = Math.max(0, now - startedAt);
+  // Progress follows the real request elapsed time and caps at 92% until the
+  // response arrives; it never loops back to zero.
+  const progress = Math.min(
+    92,
+    Math.max(4, Math.round((elapsed / ANALYSIS_BUDGET_MS) * 92)),
+  );
+  const stepIndex = Math.min(
+    REASONING_STEPS.length - 1,
+    Math.floor(progress / (100 / REASONING_STEPS.length)),
+  );
   const currentStep = REASONING_STEPS[stepIndex];
-  const progress = ((stepIndex + 1) / REASONING_STEPS.length) * 100;
 
   return (
     <div className="space-y-6" aria-busy="true" role="status" aria-live="polite">
@@ -63,7 +71,7 @@ function AiReasoningStepper({ label }: { label?: string }) {
               strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={`${progress * 2.83} 283`}
-              className="text-accent transition-all duration-500 ease-out"
+              className="text-accent transition-[stroke-dasharray] duration-500 ease-out"
               stroke="currentColor"
             />
           </svg>
@@ -82,17 +90,21 @@ function AiReasoningStepper({ label }: { label?: string }) {
       {/* Barra de progresso global */}
       <div className="w-full h-1.5 bg-surface-elevated rounded-full overflow-hidden">
         <div
-          className="h-full bg-accent rounded-full transition-all duration-500 ease-out"
+          className="h-full bg-accent rounded-full transition-[width] duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
+      <p className="text-sm text-text-muted">
+        A análise pode levar alguns segundos. O progresso para em 92% até a
+        resposta chegar.
+      </p>
 
       {/* Passos detalhados */}
       <div className="space-y-3" role="list" aria-label="Etapas da análise">
         {REASONING_STEPS.map((step, i) => (
           <div
             key={step.label}
-            className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
+            className={`flex items-center gap-3 p-3 rounded-xl transition-colors duration-300 ${
               i < stepIndex
                 ? "bg-accent/5 border border-accent/20"
                 : i === stepIndex
@@ -102,7 +114,7 @@ function AiReasoningStepper({ label }: { label?: string }) {
             role="listitem"
             aria-current={i === stepIndex ? "step" : undefined}
           >
-            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 ${
               i < stepIndex
                 ? "bg-accent text-canvas"
                 : i === stepIndex
@@ -145,7 +157,8 @@ async function extractText(file: File): Promise<string> {
 
   const pdfjsLib = await import("pdfjs-dist");
   if (typeof window !== "undefined") {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+    // Served from /public so parsing does not depend on a CDN at runtime.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
   }
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -166,9 +179,9 @@ async function extractText(file: File): Promise<string> {
 
 /* ── Persist analysis to localStorage history ───────────────────────────── */
 function persistToHistory(
-  result: ResumeAnalysis,
+  result: ResumeAnalysisResponse,
   jobTitle: string,
-  resumeText: string
+  resumeText: string,
 ): void {
   const nameMatch = resumeText.match(/^([A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][a-záàâãéêíóôõúç]+(?:\s+[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ][a-záàâãéêíóôõúç]+){1,3})/m);
   const candidateName = nameMatch?.[1]?.trim() ?? "Candidato";
@@ -200,12 +213,14 @@ function QuickTestCard({
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={isActive}
       data-testid={`quick-test-${sample.id}`}
-      className={`relative group flex flex-col p-4 rounded-2xl border transition-all duration-200 cursor-pointer ${
+      className={`relative group flex flex-col p-4 rounded-2xl border transition-colors duration-200 cursor-pointer ${
         isActive
-          ? "border-accent/50 bg-accent/5 shadow-lg shadow-accent/10"
-          : "border-border-subtle bg-surface/40 hover:border-border-hover hover:bg-surface hover:shadow-md"
+          ? "border-accent/50 bg-accent/5"
+          : "border-border-subtle bg-surface/40 hover:border-border-hover hover:bg-surface"
       }`}
     >
       <div className="flex items-start gap-3 mb-3">
@@ -219,11 +234,11 @@ function QuickTestCard({
           <p className="text-xs text-text-muted mt-0.5 truncate">{sample.description}</p>
         </div>
       </div>
-      <div className="flex items-center gap-2 text-[11px] text-text-muted">
+      <div className="flex items-center gap-2 text-xs text-text-muted">
         <FileText className="w-3 h-3 shrink-0" aria-hidden="true" />
         <span>PDF</span>
         <Clock className="w-3 h-3 shrink-0" aria-hidden="true" />
-        <span>~2s</span>
+        <span>Exemplo</span>
       </div>
       {isActive && (
         <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-accent flex items-center justify-center">
@@ -243,12 +258,13 @@ interface PlaygroundSectionProps {
 
 export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
   const [state, setState] = useState<PlaygroundState>("empty");
-  const [result, setResult] = useState<ResumeAnalysis | null>(null);
+  const [result, setResult] = useState<ResumeAnalysisResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [activeQuickTest, setActiveQuickTest] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [history, setHistory] = useState<CandidateHistoryItem[]>([]);
-  const lastResumeText = useRef<string>("");
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const refreshHistory = useCallback(() => {
     setHistory(loadCandidateHistory());
@@ -259,12 +275,26 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
     refreshHistory();
   }, [refreshHistory]);
 
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort("unmounted");
+    };
+  }, []);
+
   const analyzeText = useCallback(
     async (resumeText: string) => {
+      abortRef.current?.abort("superseded");
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const timeoutId = window.setTimeout(
+        () => controller.abort("timeout"),
+        ANALYSIS_TIMEOUT_MS,
+      );
+
       setState("loading");
       setResult(null);
       setErrorMessage("");
-      lastResumeText.current = resumeText;
+      setStartedAt(Date.now());
 
       try {
         const payload = {
@@ -276,6 +306,7 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          signal: controller.signal,
         });
 
         let raw: unknown = null;
@@ -295,7 +326,7 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
 
         if (!raw) throw new Error("Resposta vazia da API.");
 
-        const validation = ResumeAnalysisSchema.safeParse(raw);
+        const validation = ResumeAnalysisResponseSchema.safeParse(raw);
         if (!validation.success) {
           throw new Error("Resposta da IA fora do formato esperado.");
         }
@@ -306,12 +337,33 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
         setResult(validation.data);
         setState("success");
       } catch (err) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : "Erro inesperado ao analisar o currículo.";
-        setErrorMessage(message);
+        // A new request, retry or unmount cancelled this one; don't overwrite
+        // the newer state.
+        if (
+          controller.signal.aborted &&
+          controller.signal.reason !== "timeout"
+        ) {
+          return;
+        }
+
+        if (controller.signal.aborted) {
+          setErrorMessage(
+            "A análise demorou mais que o esperado. Tente novamente.",
+          );
+        } else {
+          setErrorMessage(
+            err instanceof Error
+              ? err.message
+              : "Erro inesperado ao analisar o currículo.",
+          );
+        }
         setState("error");
+      } finally {
+        window.clearTimeout(timeoutId);
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+          setStartedAt(null);
+        }
       }
     },
     [jobTitle, refreshHistory]
@@ -341,6 +393,9 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
   );
 
   const handleRetry = useCallback(() => {
+    abortRef.current?.abort("cancelled");
+    abortRef.current = null;
+    setStartedAt(null);
     setState("empty");
     setResult(null);
     setErrorMessage("");
@@ -364,14 +419,9 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
           <div className="space-y-6 animate-in fade-in duration-300">
             <Dropzone onFileSelect={handleFileSelect} />
 
-            {/* Divider */}
-            <div className="relative flex items-center gap-4">
-              <div className="h-px flex-1 bg-border-subtle" />
-              <span className="text-xs text-text-muted font-medium px-3">
-                ou teste com exemplos
-              </span>
-              <div className="h-px flex-1 bg-border-subtle" />
-            </div>
+            <p className="text-center text-sm text-text-muted font-medium">
+              ou teste com exemplos
+            </p>
 
             {/* Quick-test cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -391,7 +441,7 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
                 type="button"
                 onClick={openDrawer}
                 data-testid="open-comparison-drawer"
-                className="mx-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-border-subtle bg-surface/40 text-text-muted hover:text-text-primary hover:border-border-hover hover:bg-surface hover:shadow-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+                className="mx-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-border-subtle bg-surface/40 text-text-muted hover:text-text-primary hover:border-border-hover hover:bg-surface transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
               >
                 <BarChart2 className="w-4 h-4 text-accent" aria-hidden="true" />
                 Comparar com {history.length} candidato{history.length > 1 ? "s" : ""} anterior{history.length > 1 ? "es" : ""}
@@ -401,8 +451,8 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
         ) : null}
 
         {/* Loading — AI Reasoning Stepper */}
-        {state === "loading" && (
-          <AiReasoningStepper label={activeLabel} />
+        {state === "loading" && startedAt !== null && (
+          <AiReasoningStepper label={activeLabel} startedAt={startedAt} />
         )}
 
         {/* Error State */}
@@ -411,10 +461,10 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
             <div
               role="alert"
               aria-live="assertive"
-              className="relative p-6 rounded-2xl border border-red-500/30 bg-red-500/5"
+              className="relative p-6 rounded-2xl border border-error/30 bg-error/5"
             >
-              <div className="absolute -top-3 left-6 w-6 h-6 rounded-full bg-canvas border border-red-500/30 flex items-center justify-center">
-                <AlertCircle className="w-4 h-4 text-red-400" />
+              <div className="absolute -top-3 left-6 w-6 h-6 rounded-full bg-canvas border border-error/30 flex items-center justify-center">
+                <AlertCircle className="w-4 h-4 text-error" />
               </div>
               <div className="flex flex-col items-center gap-3 text-center">
                 <p className="text-sm font-medium text-text-primary">
@@ -456,7 +506,7 @@ export function PlaygroundSection({ jobTitle }: PlaygroundSectionProps) {
                   type="button"
                   onClick={openDrawer}
                   data-testid="open-comparison-drawer-success"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-accent/30 bg-accent/5 text-accent hover:bg-accent/10 hover:border-accent/50 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border border-accent/30 bg-accent/5 text-accent hover:bg-accent/10 hover:border-accent/50 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
                 >
                   <BarChart2 className="w-4 h-4" aria-hidden="true" />
                   Comparar com {history.length} candidatos

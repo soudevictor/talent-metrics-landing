@@ -8,7 +8,7 @@ import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { AnimatedSection } from "@/components/ui/animated-section";
 import { CheckCircle2, Cpu, ShieldCheck, Zap } from "lucide-react";
 
-/* ── Partner logo marquee data (Empresas Fictícias de Demonstração) ─────── */
+/* ── Partner logo marquee data (empresas fictícias de demonstração) ─────── */
 const PARTNER_LOGOS = [
   { name: "ApexCorp", abbr: "Ax" },
   { name: "NexusTech", abbr: "Nx" },
@@ -27,13 +27,9 @@ function PartnerMarquee() {
   const items = [...PARTNER_LOGOS, ...PARTNER_LOGOS]; // doubled for seamless loop
 
   return (
-    <div className="w-full overflow-hidden mt-16 py-8 border-y border-border-subtle relative">
-      {/* fade edges */}
-      <div className="absolute left-0 top-0 h-full w-20 bg-gradient-to-r from-canvas to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-canvas to-transparent z-10 pointer-events-none" />
-
-      <p className="text-center text-sm text-text-muted/50 font-medium mb-5">
-        Projetado para equipes de RH modernas e empresas de tecnologia
+    <div className="w-full overflow-hidden mt-16 py-10 bg-surface/20">
+      <p className="text-center text-sm text-text-muted/70 font-medium mb-5">
+        Empresas fictícias de demonstração — não são clientes reais.
       </p>
 
       <div
@@ -61,7 +57,7 @@ function PartnerMarquee() {
 /* ── Page (Server Component — Suporte Nativo a SSG/ISR) ─────────────────── */
 export default function Home() {
   return (
-    <div className="relative overflow-hidden min-h-screen flex flex-col justify-between">
+    <div className="relative overflow-x-clip min-h-screen flex flex-col justify-between">
       {/* Hero Video Background with WebP fallback */}
       <HeroVideoBackground />
 
@@ -70,29 +66,16 @@ export default function Home() {
 
       {/* ── Hero Section ────────────────────────────────────────────── */}
       <section className="relative z-10 pt-20 pb-0 md:pt-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full flex flex-col items-center text-center">
-        {/* Live engine badge */}
-        <AnimatedSection>
-          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-accent-glow border border-accent/25 text-accent text-xs sm:text-sm font-medium mb-8">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-status-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent" />
-            </span>
-            <span>Groq LPU Engine&nbsp;·&nbsp;Operational</span>
-          </div>
-        </AnimatedSection>
-
         <AnimatedSection delay={0.1}>
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-text-primary max-w-4xl leading-[1.1]">
-            Transforme montanhas de currículos em{" "}
-            <span className="text-accent">decisões estratégicas</span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-text-primary max-w-3xl leading-[1.08]">
+            Triagem de currículos com decisão objetiva
           </h1>
         </AnimatedSection>
 
         <AnimatedSection delay={0.2}>
           <p className="mt-6 text-lg sm:text-xl text-text-muted max-w-2xl font-normal leading-relaxed">
-            Sua equipe de RH livre do trabalho braçal. Analise centenas de
-            currículos por minuto com scoring objetivo, resumo inteligente e
-            alinhamento com a vaga.
+            Sua equipe de RH livre do trabalho braçal. Analise currículos com
+            scoring objetivo, resumo inteligente e alinhamento com a vaga.
           </p>
         </AnimatedSection>
 
@@ -102,8 +85,8 @@ export default function Home() {
         >
           <HeroCtaButtons />
 
-          {/* Trust highlights (Claims Técnicos e Transparentes) */}
-          <div className="mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10 text-xs sm:text-sm text-text-muted">
+          {/* Trust highlights (claims técnicos e transparentes) */}
+          <div className="mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10 text-sm text-text-muted">
             <div className="flex items-center gap-2">
               <CheckCircle2
                 className="w-4 h-4 text-accent"
@@ -113,17 +96,17 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <ShieldCheck
-                className="w-4 h-4 text-teal-400"
+                className="w-4 h-4 text-text-muted"
                 aria-hidden="true"
               />
               <span>Processamento efêmero em memória</span>
             </div>
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-amber-400" aria-hidden="true" />
+              <Zap className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>Configuração em 5 minutos</span>
             </div>
             <div className="flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-indigo-400" aria-hidden="true" />
+              <Cpu className="w-4 h-4 text-text-muted" aria-hidden="true" />
               <span>Triagem automatizada por IA</span>
             </div>
           </div>
@@ -156,7 +139,7 @@ export default function Home() {
       </AnimatedSection>
 
       {/* ── Footer ────────────────────────────────────────────────── */}
-      <footer className="w-full border-t border-border-subtle py-8 px-4 text-center text-xs text-text-muted/60">
+      <footer className="w-full bg-surface/20 py-8 px-4 text-center text-xs text-text-muted/70">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
           <p>© 2026 TalentMetrics. Todos os direitos reservados.</p>
           <p>Projeto demonstrativo para fins de estudo e portfólio técnico.</p>

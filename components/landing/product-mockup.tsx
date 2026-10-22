@@ -10,16 +10,21 @@ export function ProductMockup() {
   const [activeTab, setActiveTab] = useState<MockTab>("Visão do RH");
 
   return (
-    <div className="mt-16 w-full max-w-4xl rounded-2xl border border-border-subtle bg-surface relative overflow-hidden">
+    <div
+      data-ui
+      role="region"
+      aria-label="Prévia ilustrativa do produto, com dados de exemplo"
+      className="mt-16 w-full max-w-4xl rounded-2xl border border-border-subtle bg-surface relative overflow-hidden"
+    >
       {/* Window chrome */}
       <div className="flex items-center gap-3 px-5 pt-4 pb-3 border-b border-border-subtle">
         <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-500/70" />
-          <div className="w-3 h-3 rounded-full bg-amber-500/70" />
+          <div className="w-3 h-3 rounded-full bg-error/70" />
+          <div className="w-3 h-3 rounded-full bg-warning/70" />
           <div className="w-3 h-3 rounded-full bg-accent/70" />
         </div>
         <span className="text-xs text-text-muted ml-2 flex-1 truncate hidden xs:block">
-          talent-metrics-ai-engine · v2.0
+          talent-metrics-ai-engine · v2.0 · dados de exemplo
         </span>
         <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-full bg-accent-glow text-accent border border-accent/20 font-medium shrink-0">
           <span className="relative flex h-2 w-2">
@@ -35,8 +40,10 @@ export function ProductMockup() {
         {MOCK_TABS.map((tab) => (
           <button
             key={tab}
+            type="button"
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-xs font-medium rounded-t-lg transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+            aria-pressed={activeTab === tab}
+            className={`px-4 py-2 text-xs font-medium rounded-t-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               activeTab === tab
                 ? "bg-surface-elevated text-text-primary border border-border-subtle border-b-surface-elevated -mb-px"
                 : "text-text-muted hover:text-text-primary"
@@ -65,7 +72,7 @@ export function ProductMockup() {
               <div className="mt-2 flex items-center gap-1.5">
                 <TrendingUp className="w-3 h-3 text-accent" />
                 <span className="text-xs text-accent font-medium">
-                  Top 3% da pool
+                  Alta compatibilidade
                 </span>
               </div>
             </div>
@@ -79,7 +86,7 @@ export function ProductMockup() {
                 {[
                   "5+ anos Next.js & React",
                   "Arquitetura microsserviços",
-                  "AWS Certified SA",
+                  "Certificação Cloud (demo)",
                 ].map((p) => (
                   <li key={p} className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
@@ -101,7 +108,7 @@ export function ProductMockup() {
                   "Inglês avançado",
                 ].map((p) => (
                   <li key={p} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-warning shrink-0" />
                     {p}
                   </li>
                 ))}
